@@ -1,0 +1,43 @@
+/* Apply custom styles to the DialogPane */
+.dialog-pane {
+    -fx-background-color: #f4f4f4;
+    -fx-border-color: #0078d7;
+    -fx-border-width: 2px;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+    -fx-padding: 10px;
+}
+
+/* Style the header text if included */
+.dialog-pane .header-panel {
+    -fx-background-color: #0078d7;
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-alignment: center;
+    -fx-padding: 5px;
+}
+
+/* Style the content text */
+.dialog-pane .content {
+    -fx-font-size: 14px;
+    -fx-text-fill: #333333;
+}
+
+/* Style the buttons */
+.dialog-pane .button-bar .button {
+    -fx-background-color: #0078d7;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+    -fx-padding: 5px 10px;
+}
+
+.dialog-pane .button-bar .button:hover {
+    -fx-background-color: #005fa3;
+}
+
+.dialog-pane .button-bar .button:pressed {
+    -fx-background-color: #003f73;
+}

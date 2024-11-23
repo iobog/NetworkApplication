@@ -1,0 +1,16 @@
+/* Sidebar Styles */
+.list-view {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.text-field {
+    -fx-background-radius: 15;
+}
+
+/* Chat Area Styles */
+.button {
+    -fx-background-color: #25d366;
+    -fx-text-fill: white;
+    -fx-border-radius: 15;
+}

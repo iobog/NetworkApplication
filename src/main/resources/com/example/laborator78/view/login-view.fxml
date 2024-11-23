@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.laborator78.controller.LoginController">
+    <VBox alignment="CENTER" spacing="10.0">
+        <HBox alignment="CENTER" spacing="10.0" />
+    </VBox>
+     <PasswordField fx:id="passwordField" layoutX="186.0" layoutY="164.0" prefHeight="26.0" prefWidth="160.0" />
+      <Button layoutX="290.0" layoutY="206.0" onAction="#onCancelButtonClick" text="Cancel" />
+      <Button layoutX="187.0" layoutY="206.0" onAction="#onSubmitButtonClick" text="Submit" />
+     <Label layoutX="191.0" layoutY="142.0" text="Password:" />
+     <TextField fx:id="emailField" layoutX="186.0" layoutY="116.0" />
+     <Label layoutX="187.0" layoutY="99.0" text="Email:" />
+
+</AnchorPane>

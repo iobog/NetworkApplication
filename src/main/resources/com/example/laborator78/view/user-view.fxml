@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+
+<AnchorPane prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.laborator78.controller.UserController">
+    <!-- Top Layout -->
+    <VBox alignment="TOP_LEFT" spacing="10.0" style="-fx-padding: 10;">
+        <!-- Circle and Buttons Row -->
+        <HBox alignment="CENTER_LEFT" spacing="20.0">
+            <!-- Big Circle -->
+            <Circle fx:id="profileCircle" fill="#1d8015" radius="40.0" />
+            <!-- Buttons -->
+            <HBox alignment="CENTER_LEFT" prefWidth="730.0" spacing="10.0">
+                <Button onAction="#onContactRequestButtonClick" style="-fx-font-size: 14px;" text="Contact Request" />
+                <Button onAction="#onAddContactButtonClick" style="-fx-font-size: 14px;" text="Add Contact" />
+                <Button onAction="#onDeleteContactButtonClick" style="-fx-font-size: 14px;" text="Delete Contact" />
+                <Button onAction="#onLogoutButtonClick" style="-fx-font-size: 14px;" text="Log Out" />
+                <Button onAction="#onDeleteAccountButtonClick" style="-fx-font-size: 14px;" text="Delete Account" />
+            </HBox>
+        </HBox>
+
+        <!-- Contact List -->
+        <ListView fx:id="contactList" prefHeight="600.0" prefWidth="800.0" />
+
+        <!-- Bottom Layout -->
+        <HBox alignment="CENTER" spacing="10.0">
+            <TextField fx:id="contactNameField" promptText="Contact Name" />
+            <TextField fx:id="contactEmailField" promptText="Contact Email" />
+            <Button onAction="#onAddContactButtonClick" style="-fx-font-size: 14px;" text="Add Contact" />
+        </HBox>
+      <Accordion>
+        <panes>
+          <TitledPane animated="false" text="untitled 1" />
+          <TitledPane animated="false" text="untitled 2" />
+        </panes>
+      </Accordion>
+
+
+    </VBox>
+</AnchorPane>
