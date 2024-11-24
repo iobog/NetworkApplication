@@ -1,5 +1,6 @@
 package com.example.laborator78.controller;
 
+import com.example.laborator78.HelloApplication;
 import com.example.laborator78.domain.User;
 import com.example.laborator78.domain.UserRequestDTO;
 import com.example.laborator78.service.Network;
@@ -22,7 +23,7 @@ import javafx.scene.Scene;
 
 public class UserController {
 
-    private User currentUser;
+    //private User currentUser;
 
     @FXML
     private ListView<User> contactList;
@@ -42,17 +43,25 @@ public class UserController {
 
 
     private Network service;
-    private Stage dialogStage;
+    //private Stage dialogStage;
 
-    public void setService(Network service,  Stage stage,User user) {
-        this.service = service;
-        this.dialogStage=stage;
-        this.currentUser=user;
-        firstNameField.setText(currentUser.getFirstName());
-        lastNameField.setText(currentUser.getLastName());
-        loadFriendsList();
-        loadNonFirendsList();
+    private HelloApplication app;
 
+    public void setApp(HelloApplication app) {
+        this.app = app;
+        service = app.service;
+        firstNameField.setText(app.user.getFirstName());
+        lastNameField.setText(app.user.getLastName());
+    }
+
+    public void onShowFrindsButtonClick(ActionEvent actionEvent) {
+        try {
+            Stage window = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
+            app.showFriendsView(window);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void onAddContactButtonClick() {
@@ -116,54 +125,35 @@ public class UserController {
     }
 
     public void onLogoutButtonClick(ActionEvent actionEvent) {
-        dialogStage.close();
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/laborator78/view/Hello-view.fxml"));
-            Parent hellowView = loader.load();
-            HelloController userController = loader.getController();
-            userController.setService(service, dialogStage);
-            Scene loginScene = new Scene(hellowView);
             Stage window = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
-            window.setScene(loginScene);
-            window.show();
+            app.showHelloView(window);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
 
-    public void onDeleteAccountButtonClick() {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Account Deletion");
-        alert.setHeaderText(null);
-        alert.setContentText("Your account will be deleted in 30 seconds.");
+    public void onDeleteAccountButtonClick(ActionEvent actionEvent) throws IOException{
+        try {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Delete Account");
+            alert.setHeaderText("Are you sure you want to delete your account?");
+            alert.setContentText("This action is irreversible.");
 
-        DialogPane dialogPane = alert.getDialogPane();
-        dialogPane.getStylesheets().add(
-                getClass().getResource("/com/example/laborator78/css/custom-alert.css").toExternalForm());
-        dialogPane.getStyleClass().add("custom-alert");
-
-        alert.show();
-
-        new Thread(() -> {
-            for (int i = 30; i > 0; i--) {
-                int finalI = i;
-                javafx.application.Platform.runLater(() -> alert.setContentText("Your account will be deleted in " + finalI + " seconds."));
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.get() == ButtonType.OK) {
+                service.removeUser(app.user.getId());
+                showAlert("Account deleted", "Account deleted");
+                Stage window = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
+                app.showHelloView(window);
             }
-            javafx.application.Platform.runLater(() -> {
-                alert.close();
-
-                showAlert("Account Deleted", "Your account has been successfully deleted.");
-            });
-        }).start();
-
+        }
+        catch (IOException e) {
+            showAlert("Account deletion failed", "Account deletion failed");
+            e.printStackTrace();
+        }
     }
-
     private void showAlert(String accountDeleted, String s) {
 
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -182,59 +172,38 @@ public class UserController {
 
 
     public void onContactRequestButtonClick(ActionEvent actionEvent) {
-        List<UserRequestDTO> userRequests = service.getUserRequests();
-        if (userRequests.size() == 0) {
-            showAlert("No Requests", "There are no contact requests.");
-        } else {
+    }
 
+    public void onShowRecommendedFriendsButtonClick(ActionEvent actionEvent) {
+
+        try {
+            Stage window = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
+            app.showRecommendedFreindsView(window);
         }
-
-    }
-    private void setDialogStage(Stage dialogStage) {
-        this.dialogStage = dialogStage;
-    }
-
-
-    private void loadFriendsList() {
-        List<Optional<User>> friends = service.getListFriends(currentUser);
-        ObservableList<User> friendsList = FXCollections.observableArrayList();
-        for (Optional<User> friend : friends) {
-            friend.ifPresent(friendsList::add);
+        catch (Exception e) {
+            e.printStackTrace();
         }
-        contactList.setItems(friendsList);
-        contactList.setCellFactory(param -> new ListCell<>() {
-            @Override
-            protected void updateItem(User user, boolean empty) {
-                super.updateItem(user, empty);
-                if (empty || user == null) {
-                    setText(null);
-                } else {
-                    setText(user.getFirstName() + " " + user.getLastName());
-                }
-            }
-        });
-
-
     }
 
-    private void loadNonFirendsList(){
-        List<Optional<User>> nonFriends = service.getListNonFriends(currentUser);
-        ObservableList<User> nonFriendsList = FXCollections.observableArrayList();
-        for (Optional<User> nonFriend : nonFriends) {
-            nonFriend.ifPresent(nonFriendsList::add);
+    public void onShowFriendsRequestButtonClick(ActionEvent actionEvent) {
+
+        try {
+            Stage window = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
+            app.showFriendRequestsView(window);
         }
-        nonContactList.setItems(nonFriendsList);
-        nonContactList.setCellFactory(param -> new ListCell<>() {
-            @Override
-            protected void updateItem(User user, boolean empty) {
-                super.updateItem(user, empty);
-                if (empty || user == null) {
-                    setText(null);
-                } else {
-                    setText(user.getFirstName() + " " + user.getLastName());
-                }
-            }
-        });
+        catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
+    public void onShowSentFriendsRequestButtonClick(ActionEvent actionEvent) {
+
+        try {
+            Stage window = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
+            app.showSentFriendRequestsView(window);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

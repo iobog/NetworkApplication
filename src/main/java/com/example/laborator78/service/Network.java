@@ -1,5 +1,6 @@
 package com.example.laborator78.service;
 
+import com.example.laborator78.domain.FriendshipRequest;
 import com.example.laborator78.domain.UserRequestDTO;
 import com.example.laborator78.domain.Friendship;
 import com.example.laborator78.domain.User;
@@ -17,17 +18,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Vector;
+import java.util.stream.StreamSupport;
 
 public class Network implements Observable {
     private final UserDataBaseRepository repositoryUser;
     private final FriendshipDataBaseRepository repositoryFriendship;
-    private final RequestDataBaseRepository repositoryRequest;
+    private final RequestDataBaseRepository repositoryFriendshipRequest;
     private final List<Observer> observers = new ArrayList<>();
 
     public Network(UserDataBaseRepository userDataBaseRepository, FriendshipDataBaseRepository friendshipDataBaseRepository,RequestDataBaseRepository requestDataBaseRepository) {
         this.repositoryUser = userDataBaseRepository;
         this.repositoryFriendship = friendshipDataBaseRepository;
-        this.repositoryRequest=requestDataBaseRepository;
+        this.repositoryFriendshipRequest=requestDataBaseRepository;
     }
 
     @Override
@@ -173,34 +175,86 @@ public class Network implements Observable {
         return user.isPresent();
     }
 
-    /// this function is not implemented good
-    public List<UserRequestDTO> getUserRequests() {
-        ///
-        List<UserRequestDTO> userRequests = List.of(new UserRequestDTO("cineva", "sa fie", 1),
-                new UserRequestDTO("altcineva", "sa fie", 2));
 
-        return userRequests;
-    }
+    public List<User> getRecommendedFriends(User currentUser) {
+        List<User>nonFriends = new ArrayList<>();
 
-    public List<Optional<User>> getListNonFriends(User currentUser) {
-        List<Optional<User>> nonFriends = new ArrayList<>();
-        for (User user : getUsers()) {
+        var friends = this.getListFriends(currentUser).stream()
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .map(User::getId)
+                .toList();
+
+        var sentRequests = getSentFriendshipRequests(currentUser).stream()
+                .map(UserRequestDTO::getUserId)
+                .toList();
+
+        getUsers().forEach(user -> {
             if (!user.equals(currentUser)) {
-                boolean isFriend = false;
-                for (User friend : currentUser.getFriends()) {
-                    if (friend.equals(user)) {
-                        isFriend = true;
-                        break;
-                    }
-                }
-                if (!isFriend) {
-                    nonFriends.add(Optional.of(user));
+                boolean containsValue = friends.contains(user.getId());
+
+                boolean requested = sentRequests.contains(user.getId());
+
+                if (!containsValue && !requested) {
+                    nonFriends.add(user);
                 }
             }
-        }
+        });
         return nonFriends;
     }
 
+    public List<UserRequestDTO> getFriendshipRequests(User currentUser) {
+        var requests = repositoryFriendshipRequest.findAll();
+        return StreamSupport.stream(requests.spliterator(), false)
+            .filter(request -> request.getUser_to().equals(currentUser.getId()) && request.getStatus().equals("pending"))
+            .map(request -> {
+                var user = findUser(request.getUser_from()).orElse(null);
+                UserRequestDTO userRequestDTO= new UserRequestDTO(user.getFirstName(), user.getLastName(), request.getUser_from(), request.getCreated_at(),request.getStatus());
+                userRequestDTO.setId(request.getId());
+                return userRequestDTO;
+            })
+            .toList();
+
+    }
+
+    public List<UserRequestDTO> getSentFriendshipRequests(User currentUser) {
+        var requests = repositoryFriendshipRequest.findAll();
+        return StreamSupport.stream(requests.spliterator(), false)
+                .filter(request -> request.getUser_from().equals(currentUser.getId()) && request.getStatus().equals("pending"))
+                .map(request -> {
+                    var user = findUser(request.getUser_to()).orElse(null);
+                    UserRequestDTO userRequestDTO= new UserRequestDTO(user.getFirstName(), user.getLastName(), request.getUser_to(), request.getCreated_at(),request.getStatus());
+                    userRequestDTO.setId(request.getId());
+                    return userRequestDTO;
+                })
+                .toList();
+
+    }
 
 
+    public void acceptFriendshipRequest(User currentUser, UserRequestDTO userRequestDTO) {
+        Friendship friendship = new Friendship(currentUser.getId(), userRequestDTO.getUserId());
+        addFriendship(friendship);
+        FriendshipRequest friendshipRequest = new FriendshipRequest(userRequestDTO.getUserId(),currentUser.getId(),"accepted", userRequestDTO.getCreated_at());
+        friendshipRequest.setId(userRequestDTO.getId());
+        repositoryFriendshipRequest.update(friendshipRequest);
+
+    }
+
+    public void rejectFriendshipRequest(User currentUser, UserRequestDTO userRequestDTO) {
+        Friendship friendship = new Friendship(currentUser.getId(), userRequestDTO.getUserId());
+       // addFriendship(friendship);
+        FriendshipRequest friendshipRequest = new FriendshipRequest(userRequestDTO.getUserId(),currentUser.getId(),"rejected", userRequestDTO.getCreated_at());
+        friendshipRequest.setId(userRequestDTO.getId());
+        repositoryFriendshipRequest.update(friendshipRequest);
+    }
+
+    public void sendFriendshipRequest(User user, User user1) {
+        FriendshipRequest friendshipRequest = new FriendshipRequest(user.getId(), user1.getId(), "pending", java.time.LocalDateTime.now());
+        repositoryFriendshipRequest.save(friendshipRequest);
+    }
+
+    public void deleteFriendshipRequest(UserRequestDTO userRequestDTO) {
+        repositoryFriendshipRequest.delete(userRequestDTO.getId());
+    }
 }

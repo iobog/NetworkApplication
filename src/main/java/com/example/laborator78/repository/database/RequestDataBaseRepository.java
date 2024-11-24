@@ -6,6 +6,7 @@ import com.example.laborator78.domain.validators.Validator;
 import com.example.laborator78.repository.Repository;
 
 import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -27,7 +28,7 @@ public class RequestDataBaseRepository implements Repository<Long, FriendshipReq
 
     @Override
     public Optional<FriendshipRequest> findOne(Long id) {
-        String query = "SELECT * FROM friendship_requests WHERE id_request = ?";
+        String query = "SELECT * FROM friendship_requests WHERE req_id = ?";
         try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statement = connection.prepareStatement(query)) {
 
@@ -35,12 +36,14 @@ public class RequestDataBaseRepository implements Repository<Long, FriendshipReq
             ResultSet resultSet = statement.executeQuery();
 
             if (resultSet.next()) { // Check if a result was found
-                Long requestId = resultSet.getLong("id_request");
-                Long fromId = resultSet.getLong("from_id");
-                Long toId = resultSet.getLong("to_id");
+                Long requestId = resultSet.getLong("req_id");
+                Long fromId = resultSet.getLong("user_from");
+                Long toId = resultSet.getLong("user_to");
                 String status = resultSet.getString("status");
+                Timestamp date = resultSet.getTimestamp("created_at");
+                LocalDateTime createdAt = new java.sql.Timestamp(date.getTime()).toLocalDateTime();
 
-                FriendshipRequest request = new FriendshipRequest(fromId, toId, status);
+                FriendshipRequest request = new FriendshipRequest(fromId, toId, status,createdAt);
                 request.setId(requestId);
                 return Optional.of(request); // Return the found request
             }
@@ -59,12 +62,14 @@ public class RequestDataBaseRepository implements Repository<Long, FriendshipReq
              ResultSet resultSet = statement.executeQuery()) {
 
             while (resultSet.next()) {
-                Long requestId = resultSet.getLong("id_request");
-                Long fromId = resultSet.getLong("from_id");
-                Long toId = resultSet.getLong("to_id");
+                Long requestId = resultSet.getLong("req_id");
+                Long fromId = resultSet.getLong("user_from");
+                Long toId = resultSet.getLong("user_to");
                 String status = resultSet.getString("status");
+                Timestamp date = resultSet.getTimestamp("created_at");
+                LocalDateTime createdAt = new java.sql.Timestamp(date.getTime()).toLocalDateTime();
 
-                FriendshipRequest request = new FriendshipRequest(fromId, toId, status);
+                FriendshipRequest request = new FriendshipRequest(fromId, toId, status,createdAt);
                 request.setId(requestId);
                 requests.add(request);
             }
@@ -77,12 +82,12 @@ public class RequestDataBaseRepository implements Repository<Long, FriendshipReq
     public Optional<FriendshipRequest> save(FriendshipRequest entity) {
         validator.validate(entity); // Validate the entity before saving
 
-        String query = "INSERT INTO friendship_requests (from_id, to_id, status) VALUES (?, ?, ?)";
+        String query = "INSERT INTO friendship_requests (user_from, user_to, status) VALUES (?, ?, ?)";
         try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
 
-            statement.setLong(1, entity.getFrom());
-            statement.setLong(2, entity.getTo());
+            statement.setLong(1, entity.getUser_from());
+            statement.setLong(2, entity.getUser_to());
             statement.setString(3, entity.getStatus());
 
             int affectedRows = statement.executeUpdate();
@@ -104,7 +109,7 @@ public class RequestDataBaseRepository implements Repository<Long, FriendshipReq
         Optional<FriendshipRequest> requestToDelete = findOne(id); // Check if request exists
 
         if (requestToDelete.isPresent()) {
-            String query = "DELETE FROM friendship_requests WHERE id_request = ?";
+            String query = "DELETE FROM friendship_requests WHERE req_id = ?";
             try (Connection connection = DriverManager.getConnection(url, username, password);
                  PreparedStatement statement = connection.prepareStatement(query)) {
 
@@ -126,14 +131,11 @@ public class RequestDataBaseRepository implements Repository<Long, FriendshipReq
         }
         validator.validate(entity); // Validate the entity before updating
 
-        String query = "UPDATE friendship_requests SET from_id = ?, to_id = ?, status = ? WHERE id_request = ?";
+        String query = "UPDATE friendship_requests SET  status = ? WHERE req_id = ?";
         try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement statement = connection.prepareStatement(query)) {
-
-            statement.setLong(1, entity.getFrom());
-            statement.setLong(2, entity.getTo());
-            statement.setString(3, entity.getStatus());
-            statement.setLong(4, entity.getId());
+            statement.setString(1, entity.getStatus());
+            statement.setLong(2, entity.getId());
 
             int affectedRows = statement.executeUpdate();
             if (affectedRows > 0) {

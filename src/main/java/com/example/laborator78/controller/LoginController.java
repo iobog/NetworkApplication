@@ -1,6 +1,7 @@
 package com.example.laborator78.controller;
 
 
+import com.example.laborator78.HelloApplication;
 import com.example.laborator78.domain.User;
 import com.example.laborator78.service.Network;
 import javafx.event.ActionEvent;
@@ -23,12 +24,11 @@ public class LoginController {
     @FXML
     private PasswordField passwordField;
 
-    private Network service;
-    Stage dialogStage;
+    private HelloApplication app;
 
-    public void setService(Network service,  Stage stage) {
-        this.service = service;
-        this.dialogStage=stage;
+
+    public void setApp(HelloApplication app) {
+        this.app = app;
     }
 
     public void onSubmitButtonClick(ActionEvent actionEvent) {
@@ -37,27 +37,19 @@ public class LoginController {
         String password = passwordField.getText();
 
         // Check if the password and confirm password match else show an pop up error
-        User user = service.findUserByEmailAndPassword(email, password);
+        User user = app.service.findUserByEmailAndPassword(email, password);
         if (user!=null) {
             try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/laborator78/view/user-view.fxml"));
-                Parent loginView = loader.load();
-                UserController userController = loader.getController();
-                userController.setService(service, dialogStage,user);
-                Scene loginScene = new Scene(loginView);
+                app.user = user;
                 Stage window = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
-                window.setScene(loginScene);
-                window.show();
+                app.showUserView(window);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         } else {
             try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/laborator78/view/hello-view.fxml"));
-                Parent root = loader.load();
-                Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
-                stage.setScene(new Scene(root));
-                stage.show();
+                Stage window = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
+                app.showHelloView(window);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -65,13 +57,9 @@ public class LoginController {
     }
 
     public void onCancelButtonClick(ActionEvent actionEvent) {
-
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/laborator78/view/hello-view.fxml"));
-            Parent root = loader.load();
-            Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.show();
+            Stage window = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
+            app.showHelloView(window);
         } catch (IOException e) {
             e.printStackTrace();
         }

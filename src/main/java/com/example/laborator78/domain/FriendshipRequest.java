@@ -1,64 +1,51 @@
 package com.example.laborator78.domain;
 
+import java.time.LocalDateTime;
+
 public class FriendshipRequest extends Entity<Long> {
 
-
-    private Long from;
-    private Long to;
+    private Long user_from;
+    private Long user_to;
     private String status;
+    private LocalDateTime created_at;
 
-    public FriendshipRequest( Long from, Long to, String status) {
-        this.from = from;
-        this.to = to;
+    public FriendshipRequest( Long user_from, Long user_to, String status, LocalDateTime created_at) {
+        this.user_from = user_from;
+        this.user_to = user_to;
         this.status = status;
+        this.created_at = created_at;
     }
 
 
-    public FriendshipRequest(Long from, Long to) {
-        this.from = from;
-        this.to = to;
-        this.status = "pending";
+    public Long getUser_from() {
+        return user_from;
     }
 
-
-    public FriendshipRequest() {
-        this.status = "pending";
+    public void setUser_from(Long user_from) {
+        this.user_from = user_from;
     }
 
-
-
-    public Long getFrom() {
-        return from;
+    public Long getUser_to() {
+        return user_to;
     }
 
-    public Long getTo() {
-        return to;
+    public void setUser_to(Long user_to) {
+        this.user_to = user_to;
     }
 
     public String getStatus() {
         return status;
     }
 
-
-    public void setFrom(Long from) {
-        this.from = from;
-    }
-
-    public void setTo(Long to) {
-        this.to = to;
-    }
-
     public void setStatus(String status) {
         this.status = status;
     }
 
-    @Override
-    public String toString() {
-        return "FriendshipRequest{" +
-                ", from=" + from +
-                ", to=" + to +
-                ", status='" + status + '\'' +
-                '}';
+    public LocalDateTime getCreated_at() {
+        return created_at;
     }
 
+    public void setCreated_at(LocalDateTime created_at) {
+        this.created_at = created_at;
+    }
 }

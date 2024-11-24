@@ -1,5 +1,6 @@
 package com.example.laborator78.controller;
 
+import com.example.laborator78.HelloApplication;
 import com.example.laborator78.domain.User;
 import com.example.laborator78.service.Network;
 import javafx.event.ActionEvent;
@@ -29,21 +30,16 @@ public class SignupController {
     private TextField confirmPasswordField;
 
 
-    private Network service;
-    Stage dialogStage;
+    private HelloApplication app;
 
-    public void setService(Network service,  Stage stage) {
-        this.service = service;
-        this.dialogStage=stage;
+    public void setApp(HelloApplication app) {
+        this.app = app;
     }
 
     public void onCancelButtonClick(ActionEvent actionEvent) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/laborator78/view/hello-view.fxml"));
-            Parent root = loader.load();
-            Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.show();
+            Stage window = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
+            app.showHelloView(window);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -66,22 +62,17 @@ public class SignupController {
 
         User user = new User(firstName, lastName, email, password);
 
-        if(service.findUserByEmail(email)){
+        if(app.service.findUserByEmail(email)){
             showAlert("Error", "User already exists");
             return;
         }
 
         try{
-            service.addUser(user);
+            app.service.addUser(user);
             showAlert("Success", "User has been successfully created.");
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/laborator78/view/user-view.fxml"));
-            Parent loginView = loader.load();
-            UserController userController = loader.getController();
-            userController.setService(service, dialogStage,user);
-            Scene loginScene = new Scene(loginView);
             Stage window = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
-            window.setScene(loginScene);
-            window.show();
+            app.showUserView(window);
+
         }
         catch (Exception e){
             showAlert("Error", "There was an error creating the user.");
