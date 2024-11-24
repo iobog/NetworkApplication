@@ -1,6 +1,4 @@
-package com.example.laborator78.controller;
-
-import com.example.laborator78.domain.Entity;
+package com.example.laborator78.domain;
 
 public class UserRequestDTO extends Entity<Long> {
 

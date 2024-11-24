@@ -74,7 +74,14 @@ public class SignupController {
         try{
             service.addUser(user);
             showAlert("Success", "User has been successfully created.");
-            dialogStage.close();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/laborator78/view/user-view.fxml"));
+            Parent loginView = loader.load();
+            UserController userController = loader.getController();
+            userController.setService(service, dialogStage,user);
+            Scene loginScene = new Scene(loginView);
+            Stage window = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
+            window.setScene(loginScene);
+            window.show();
         }
         catch (Exception e){
             showAlert("Error", "There was an error creating the user.");

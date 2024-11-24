@@ -3,10 +3,12 @@ package com.example.laborator78;
 import com.example.laborator78.controller.HelloController;
 import com.example.laborator78.domain.Friendship;
 import com.example.laborator78.domain.User;
+import com.example.laborator78.domain.validators.FriendshipRequestValidator;
 import com.example.laborator78.domain.validators.FriendshipValidator;
 import com.example.laborator78.domain.validators.UserValidator;
 import com.example.laborator78.repository.Repository;
 import com.example.laborator78.repository.database.FriendshipDataBaseRepository;
+import com.example.laborator78.repository.database.RequestDataBaseRepository;
 import com.example.laborator78.repository.database.UserDataBaseRepository;
 import com.example.laborator78.service.Network;
 import javafx.application.Application;
@@ -31,8 +33,11 @@ public class HelloApplication extends Application {
         FriendshipDataBaseRepository friendshipRepository =
                 new FriendshipDataBaseRepository(url,username,pasword,new FriendshipValidator(userRepository));
 
+        RequestDataBaseRepository requestRepository =
+                new RequestDataBaseRepository(url,username,pasword, new FriendshipRequestValidator());
+
         //utilizatorRepository.findAll().forEach(x-> System.out.println(x));
-        Network service =new Network(userRepository,friendshipRepository);
+        Network service =new Network(userRepository,friendshipRepository,requestRepository);
         initView(service, stage);
 
     }

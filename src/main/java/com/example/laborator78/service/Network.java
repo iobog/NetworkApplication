@@ -1,9 +1,10 @@
 package com.example.laborator78.service;
 
-import com.example.laborator78.controller.UserRequestDTO;
+import com.example.laborator78.domain.UserRequestDTO;
 import com.example.laborator78.domain.Friendship;
 import com.example.laborator78.domain.User;
 import com.example.laborator78.domain.validators.ValidationException;
+import com.example.laborator78.repository.database.RequestDataBaseRepository;
 import com.example.laborator78.utils.events.ChangeEventType;
 import com.example.laborator78.utils.events.Event;
 import com.example.laborator78.utils.events.UserEntityChangeEvent;
@@ -20,11 +21,13 @@ import java.util.Vector;
 public class Network implements Observable {
     private final UserDataBaseRepository repositoryUser;
     private final FriendshipDataBaseRepository repositoryFriendship;
+    private final RequestDataBaseRepository repositoryRequest;
     private final List<Observer> observers = new ArrayList<>();
 
-    public Network(UserDataBaseRepository userDataBaseRepository, FriendshipDataBaseRepository friendshipDataBaseRepository) {
+    public Network(UserDataBaseRepository userDataBaseRepository, FriendshipDataBaseRepository friendshipDataBaseRepository,RequestDataBaseRepository requestDataBaseRepository) {
         this.repositoryUser = userDataBaseRepository;
         this.repositoryFriendship = friendshipDataBaseRepository;
+        this.repositoryRequest=requestDataBaseRepository;
     }
 
     @Override
@@ -173,12 +176,31 @@ public class Network implements Observable {
     /// this function is not implemented good
     public List<UserRequestDTO> getUserRequests() {
         ///
-        List<UserRequestDTO> userRequests = new ArrayList<>();
-        for (User user : getUsers()) {
-            if (user.getFriends().size() == 0) {
-                userRequests.add(new UserRequestDTO(user.getFirstName(), user.getLastName(), user.getId()));
-            }
-        }
+        List<UserRequestDTO> userRequests = List.of(new UserRequestDTO("cineva", "sa fie", 1),
+                new UserRequestDTO("altcineva", "sa fie", 2));
+
         return userRequests;
     }
+
+    public List<Optional<User>> getListNonFriends(User currentUser) {
+        List<Optional<User>> nonFriends = new ArrayList<>();
+        for (User user : getUsers()) {
+            if (!user.equals(currentUser)) {
+                boolean isFriend = false;
+                for (User friend : currentUser.getFriends()) {
+                    if (friend.equals(user)) {
+                        isFriend = true;
+                        break;
+                    }
+                }
+                if (!isFriend) {
+                    nonFriends.add(Optional.of(user));
+                }
+            }
+        }
+        return nonFriends;
+    }
+
+
+
 }
