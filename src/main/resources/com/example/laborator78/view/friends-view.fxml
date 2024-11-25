@@ -9,5 +9,6 @@
 
     <HBox />
      <Button layoutX="445.0" layoutY="323.0" onAction="#onBackButtonClick" style="-fx-font-size: 14px;" text="Back" />
+     <Button layoutX="380.0" layoutY="323.0" onAction="#onConversationButtonClick" style="-fx-font-size: 14px;" text="Message" />
 
 </AnchorPane>

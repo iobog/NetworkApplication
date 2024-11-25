@@ -59,4 +59,18 @@ public class FriendsController {
         }
 
     }
+
+    public void onConversationButtonClick(ActionEvent actionEvent) {
+
+        User user = contactList.getSelectionModel().getSelectedItem();
+        try{
+            Stage window = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
+            app.showConversationView(window, user);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            app.showError("Unable to load the Conversation. Please try again.");
+        }
+
+    }
 }

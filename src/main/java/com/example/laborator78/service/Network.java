@@ -1,10 +1,8 @@
 package com.example.laborator78.service;
 
-import com.example.laborator78.domain.FriendshipRequest;
-import com.example.laborator78.domain.UserRequestDTO;
-import com.example.laborator78.domain.Friendship;
-import com.example.laborator78.domain.User;
+import com.example.laborator78.domain.*;
 import com.example.laborator78.domain.validators.ValidationException;
+import com.example.laborator78.repository.database.MessageDataBaseRepository;
 import com.example.laborator78.repository.database.RequestDataBaseRepository;
 import com.example.laborator78.utils.events.ChangeEventType;
 import com.example.laborator78.utils.events.Event;
@@ -24,12 +22,15 @@ public class Network implements Observable {
     private final UserDataBaseRepository repositoryUser;
     private final FriendshipDataBaseRepository repositoryFriendship;
     private final RequestDataBaseRepository repositoryFriendshipRequest;
+    private final MessageDataBaseRepository repositoryMessage;
+
     private final List<Observer> observers = new ArrayList<>();
 
-    public Network(UserDataBaseRepository userDataBaseRepository, FriendshipDataBaseRepository friendshipDataBaseRepository,RequestDataBaseRepository requestDataBaseRepository) {
+    public Network(UserDataBaseRepository userDataBaseRepository, FriendshipDataBaseRepository friendshipDataBaseRepository, RequestDataBaseRepository requestDataBaseRepository, MessageDataBaseRepository repositoryMessage) {
         this.repositoryUser = userDataBaseRepository;
         this.repositoryFriendship = friendshipDataBaseRepository;
         this.repositoryFriendshipRequest=requestDataBaseRepository;
+        this.repositoryMessage = repositoryMessage;
     }
 
     @Override
@@ -257,4 +258,40 @@ public class Network implements Observable {
     public void deleteFriendshipRequest(UserRequestDTO userRequestDTO) {
         repositoryFriendshipRequest.delete(userRequestDTO.getId());
     }
+
+
+    //send message,
+    // get my messages
+
+    public void sendMessage(User from, User to, String message, Optional<Long> reply_message_id) {
+        Message message1 = new Message(from.getId(), to.getId(), message, java.time.LocalDateTime.now(), reply_message_id);
+        repositoryMessage.save(message1);
+    }
+
+
+
+    public List<MessageDTO> listMessages(User user1,User user2) {
+        List<MessageDTO>messages = new ArrayList<>();
+        repositoryMessage.findAll().forEach(message -> {
+            if (message.getTo_id().equals(user1.getId()) && message.getFrom_id().equals(user2.getId())
+            || (message.getTo_id().equals(user2.getId()) && message.getFrom_id().equals(user1.getId()))) {
+
+                Optional<String> strReplayMessage = Optional.empty();
+                if (message.getReply_massage_id().isPresent()) {
+                    Optional<Message> replyMessage = repositoryMessage.findOne(message.getReply_massage_id().get());
+                    if (replyMessage.isPresent()) {
+                        strReplayMessage = Optional.of(replyMessage.get().getMessage());
+                    }
+                }
+
+                MessageDTO messageDTO = new MessageDTO(message.getId(), message.getMessage(), message.getCreated_at(), strReplayMessage, message.getFrom_id(), message.getTo_id());
+                messages.add(messageDTO);
+
+            }
+        });
+        messages.sort((m1,m2)->m1.getCreated_at().compareTo(m2.getCreated_at()));
+        return messages;
+    }
+
+
 }

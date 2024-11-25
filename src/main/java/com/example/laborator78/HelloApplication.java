@@ -2,12 +2,15 @@ package com.example.laborator78;
 
 import com.example.laborator78.controller.*;
 import com.example.laborator78.domain.Friendship;
+import com.example.laborator78.domain.Message;
 import com.example.laborator78.domain.User;
 import com.example.laborator78.domain.validators.FriendshipRequestValidator;
 import com.example.laborator78.domain.validators.FriendshipValidator;
+import com.example.laborator78.domain.validators.MessageValidator;
 import com.example.laborator78.domain.validators.UserValidator;
 import com.example.laborator78.repository.Repository;
 import com.example.laborator78.repository.database.FriendshipDataBaseRepository;
+import com.example.laborator78.repository.database.MessageDataBaseRepository;
 import com.example.laborator78.repository.database.RequestDataBaseRepository;
 import com.example.laborator78.repository.database.UserDataBaseRepository;
 import com.example.laborator78.service.Network;
@@ -43,8 +46,12 @@ public class HelloApplication extends Application {
         RequestDataBaseRepository requestRepository =
                 new RequestDataBaseRepository(url,username,pasword, new FriendshipRequestValidator());
 
-        service =new Network(userRepository,friendshipRepository,requestRepository);
-        var user1 = service.findUser(Long.valueOf(21));
+        MessageDataBaseRepository messageRepository =
+                new MessageDataBaseRepository(url,username,pasword, new MessageValidator());
+
+        service =new Network(userRepository,friendshipRepository,requestRepository,messageRepository);
+        //24 28 29
+        var user1 = service.findUser(Long.valueOf(29));
         if(user1.isPresent())
             this.user = user1.get();
         this.showUserView(stage);
@@ -154,6 +161,18 @@ public class HelloApplication extends Application {
         stage.show();
 
     }
+
+    public void showConversationView(Stage stage, User user) throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/laborator78/view/conversation-view.fxml"));
+        Parent loginView = loader.load();
+        ConversationController conversationController = loader.getController();
+        conversationController.setApp(this, user);
+        Scene loginScene = new Scene(loginView);
+        stage.setScene(loginScene);
+        stage.show();
+
+    }
+
 
     public void showSucces(String message) {
         // Optional: Use an alert dialog to show error messages
