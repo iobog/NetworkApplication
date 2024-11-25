@@ -7,28 +7,32 @@
 
 <?import org.controlsfx.control.ListActionView?>
 <AnchorPane prefHeight="300.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.laborator78.controller.UserController">
-    <!-- Main Layout -->
-    <VBox alignment="TOP_LEFT" spacing="10.0" style="-fx-padding: 10;">
-        <!-- Top Section -->
-        <HBox alignment="CENTER_LEFT" spacing="20.0">
-            <!-- Profile Circle -->
-            <Circle fx:id="profileCircle" fill="#1d8015" radius="40.0" />
 
-            <!-- User Name -->
-            <HBox spacing="5.0">
-                <Label fx:id="firstNameField" style="-fx-font-size: 24px;" text="Name" />
-                <Label fx:id="lastNameField" style="-fx-font-size: 24px;" text="Surname" />
-            </HBox>
+    <VBox spacing="10" style="-fx-padding: 10">
+        <HBox spacing="5.0">
+            <Label fx:id="firstNameField" style="-fx-font-size: 24px;" text="Name" />
+            <Label fx:id="lastNameField" style="-fx-font-size: 24px;" text="Surname" />
+        </HBox>
+        <Separator>
 
-            <!-- Action Buttons -->
-            <HBox alignment="CENTER_LEFT" prefWidth="600.0" spacing="10.0">
+        </Separator>
+
+        <HBox>
+            <VBox alignment="CENTER_LEFT" prefWidth="600.0" spacing="10.0">
                 <Button onAction="#onShowFrindsButtonClick" style="-fx-font-size: 14px;" text="Friends" />
                 <Button onAction="#onShowRecommendedFriendsButtonClick" style="-fx-font-size: 14px;" text="Recommended" />
                 <Button onAction="#onShowFriendsRequestButtonClick" style="-fx-font-size: 14px;" text="Requests" />
                 <Button onAction="#onShowSentFriendsRequestButtonClick" style="-fx-font-size: 14px;" text="Sent Requests" />
                 <Button onAction="#onLogoutButtonClick" style="-fx-font-size: 14px;" text="Log Out" />
                 <Button onAction="#onDeleteAccountButtonClick" style="-fx-font-size: 14px;" text="Delete Account" />
-            </HBox>
+            </VBox>
+
+            <!-- main -->
+            <VBox fx:id="mainBox">
+
+            </VBox>
         </HBox>
+
     </VBox>
+
 </AnchorPane>

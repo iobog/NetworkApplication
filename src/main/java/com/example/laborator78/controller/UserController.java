@@ -13,6 +13,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -22,6 +23,9 @@ import java.util.Optional;
 import javafx.scene.Scene;
 
 public class UserController {
+
+    @FXML
+    public VBox mainBox;
 
     //private User currentUser;
 
@@ -178,6 +182,7 @@ public class UserController {
 
         try {
             Stage window = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
+            //Stage window = (Stage)mainBox.getScene().getWindow();
             app.showRecommendedFreindsView(window);
         }
         catch (Exception e) {

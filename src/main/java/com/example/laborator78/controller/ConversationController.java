@@ -105,13 +105,17 @@ public class ConversationController {
     public void onSendButtonClick(ActionEvent actionEvent) {
         try{
             String message = messageField.getText();
-            app.service.sendMessage(app.user,user,message, Optional.ofNullable(selectedMessageForReply.getId()));
+
+            if(selectedMessageForReply!=null)
+                app.service.sendMessage(app.user,user,message, Optional.ofNullable(selectedMessageForReply.getId()));
+            else
+                app.service.sendMessage(app.user,user,message,Optional.empty());
             messageField.clear();
             clearReply();
             loadConversation();
         }
         catch (Exception e){
-            //e.printStackTrace();
+            e.printStackTrace();
             app.showError("Unable to send the message. Please try again.");
         }
     }

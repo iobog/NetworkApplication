@@ -50,11 +50,16 @@ public class HelloApplication extends Application {
                 new MessageDataBaseRepository(url,username,pasword, new MessageValidator());
 
         service =new Network(userRepository,friendshipRepository,requestRepository,messageRepository);
-        //24 28 29
-        var user1 = service.findUser(Long.valueOf(29));
+
+
+        //23  29
+        var user1 = service.findUser(Long.valueOf(23));
         if(user1.isPresent())
             this.user = user1.get();
         this.showUserView(stage);
+
+
+
         //initView(stage);
 
     }

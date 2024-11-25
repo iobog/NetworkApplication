@@ -1,6 +1,7 @@
 package com.example.laborator78.domain.validators;
 
 import com.example.laborator78.domain.FriendshipRequest;
+import com.example.laborator78.repository.database.FriendshipDataBaseRepository;
 import com.example.laborator78.repository.database.RequestDataBaseRepository;
 
 public class FriendshipRequestValidator implements Validator<FriendshipRequest> {
@@ -14,13 +15,13 @@ public class FriendshipRequestValidator implements Validator<FriendshipRequest> 
 
 }
 
-
+//
 //
 //public class FriendshipRequestValidator implements Validator<FriendshipRequest> {
 //
-//    private Freinds repo;
+//    private FriendshipDataBaseRepository repo;
 //
-//    public FriendshipRequestValidator(Friendip repo) {
+//    public FriendshipRequestValidator(FriendshipDataBaseRepository repo) {
 //        this.repo = repo;
 //    }
 //
@@ -34,11 +35,11 @@ public class FriendshipRequestValidator implements Validator<FriendshipRequest> 
 //        if(repo.findOne(entity.getId()).isPresent())
 //            throw new ValidationException("The id already exists! ");
 //        repo.findAll().forEach(x->{
-//            if((x.getUser_from().equals(entity.getUser_from()) && x.getUser_to().equals(entity.getUser_to()))
+//            if((x.getIdUser1().equals(entity.getUser_from()) && x.getIdUser2().equals(entity.getUser_to()))
 //                    ||
-//                   ( x.getUser_from().equals(entity.getUser_to()) && x.getUser_to().equals(entity.getUser_from())))
+//                   ( x.getIdUser2().equals(entity.getUser_to()) && x.getIdUser1().equals(entity.getUser_from())))
 //                throw new ValidationException("The friendship request already exists! ");
 //        });
 //    }
 //}
-
+//

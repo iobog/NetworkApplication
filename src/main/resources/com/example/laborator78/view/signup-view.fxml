@@ -9,15 +9,15 @@
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.example.laborator78.controller.SignupController"
-            prefHeight="400.0" prefWidth="600.0">
-    <VBox alignment="CENTER" spacing="10.0" AnchorPane.leftAnchor="20.0">
+            prefHeight="400.0" prefWidth="300.0">
+    <VBox alignment="CENTER" spacing="10.0" >
         <Label layoutX="187.0" layoutY="99.0" text="First Name:" />
         <TextField fx:id="firstNameField" layoutX="186.0" layoutY="116.0" />
 
         <Label layoutX="187.0" layoutY="99.0" text="Last Name:" />
         <TextField fx:id="lastNameField" layoutX="186.0" layoutY="116.0" />
 
-        <Label layoutX="187.0" layoutY="99.0" text="Email:" />
+        <Label layoutX="187.0" layoutY="99.0" text="email:" />
         <TextField fx:id="emailField" layoutX="186.0" layoutY="116.0" />
 
 
