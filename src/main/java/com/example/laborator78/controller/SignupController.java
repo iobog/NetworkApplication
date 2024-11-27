@@ -57,7 +57,7 @@ public class SignupController {
         if (!password.equals(confirmPassword)) {
             // Show an error if the passwords don't match
             showAlert("Password mismatch", "The passwords you entered do not match.");
-            return;
+
         }
 
         User user = new User(firstName, lastName, email, password);
