@@ -1,0 +1,45 @@
+/* AnchorPane styling (applies to the main window) */
+.root {
+    -fx-background-radius: 20; /* Rounded corners for the entire window */
+    -fx-background-color: #f5cd8c; /* Set background color */
+    -fx-border-radius: 20; /* Matches background radius */
+    -fx-border-color: lightgray; /* Optional: Add a border to highlight the rounded effect */
+    -fx-border-width: 2;
+    -fx-padding: 20; /* Add padding to the window */
+
+}
+
+/* General VBox styling */
+#box {
+    -fx-alignment: center;
+    -fx-spacing: 10;
+
+}
+
+/* Styling for labels */
+#welcomeText {
+    -fx-font-size: 36px;
+    -fx-font-weight: bold;
+    -fx-text-fill: orange; /* Blue text color */
+}
+
+/* Buttons styling */
+#hbox .button {
+    -fx-background-radius: 15; /* Rounded corners for buttons */
+    -fx-padding: 10 20; /* Adjust padding for better button proportions */
+    -fx-font-size: 14px;
+    -fx-background-color: orage; /* Blue button color */
+    -fx-text-fill: black; /* White text on buttons */
+    -fx-border-color: black; /* Remove border */
+    -fx-border-radius: 15;
+}
+
+/* Button hover effect */
+#hbox .button:hover {
+    -fx-background-color: #f15d1c; /* Darker blue on hover */
+}
+
+/* Button press effect */
+#hbox .button:pressed {
+    -fx-background-color: #2A65CB; /* Even darker blue when pressed */
+}

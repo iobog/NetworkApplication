@@ -28,7 +28,7 @@ import java.io.IOException;
 public class HelloApplication extends Application {
 
     public Network service;
-    public User user;
+    //public User user;
 
     @Override
     public void start(Stage stage) throws IOException {
@@ -49,30 +49,33 @@ public class HelloApplication extends Application {
         MessageDataBaseRepository messageRepository =
                 new MessageDataBaseRepository(url,username,pasword, new MessageValidator());
 
-        service =new Network(userRepository,friendshipRepository,requestRepository,messageRepository);
-
-
+        service = new Network(userRepository,friendshipRepository,requestRepository,messageRepository);
         //23  29
         var user1 = service.findUser(Long.valueOf(23));
         if(user1.isPresent())
-            this.user = user1.get();
-        this.showUserView(stage);
-
-
-
-        //initView(stage);
-
+            this.showUserView(stage,user1.get());
+       //initView(stage);
     }
 
     private void initView(Stage primaryStage) throws IOException {
-        FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(getClass().getResource("/com/example/laborator78/view/hello-view.fxml"));
+//        FXMLLoader loader = new FXMLLoader();
+//        loader.setLocation(getClass().getResource("/com/example/laborator78/view/hello-view.fxml"));
+//        Scene scene = new Scene(loader.load(), 320, 240);
+//        primaryStage.setTitle("Welcome!");
+//
+//        HelloController controller = loader.getController();
+//        //controller.setService(service, primaryStage);
+//        controller.setApp(this);
+//
+//        primaryStage.setScene(scene);
+//        primaryStage.show();
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/laborator78/view/hello-view.fxml"));
         Scene scene = new Scene(loader.load(), 320, 240);
-        primaryStage.setTitle("Hello!");
+        primaryStage.setTitle("Welcome!");
 
         HelloController controller = loader.getController();
-        //controller.setService(service, primaryStage);
         controller.setApp(this);
+
         primaryStage.setScene(scene);
         primaryStage.show();
     }
@@ -84,94 +87,89 @@ public class HelloApplication extends Application {
     public void showLoginView(Stage stage) throws  IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/laborator78/view/login-view.fxml"));
         Parent loginView = loader.load();
-
-        // Get the LoginController instance
         LoginController loginController = loader.getController();
-
-        // Pass the service and stage to the LoginController
         loginController.setApp(this);
-
-        // Set the new scene
         Scene loginScene = new Scene(loginView);
         stage.setScene(loginScene);
         stage.show();
+
     }
 
     public void showSignupView(Stage stage) throws IOException {
-        // Load the Signup view using FXMLLoader
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/laborator78/view/signup-view.fxml"));
         Parent signupView = loader.load();
-
-        // Get the SignupController instance
         SignupController signupController = loader.getController();
-
-        // Pass the service and stage to the SignupController
-        //signupController.setService(service, dialogStage);
         signupController.setApp(this);
-
-        // Set the new scene
         Scene signupScene = new Scene(signupView);
         stage.setScene(signupScene);
         stage.show();
     }
 
-    public void showUserView(Stage stage) throws IOException {
+    public void showUserView(Stage stage, User user) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/laborator78/view/user-view.fxml"));
         Parent loginView = loader.load();
         UserController userController = loader.getController();
         userController.setApp(this);
+        userController.setUser(user);
+        //userController.setUser(user);
         Scene loginScene = new Scene(loginView);
         stage.setScene(loginScene);
         stage.show();
+
     }
 
-    public void showFriendsView(Stage stage) throws IOException {
+    public void showFriendsView(Stage stage,User user) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/laborator78/view/friends-view.fxml"));
         Parent loginView = loader.load();
         FriendsController friendsController = loader.getController();
         friendsController.setApp(this);
+        friendsController.setUser(user);
         Scene loginScene = new Scene(loginView);
         stage.setScene(loginScene);
         stage.show();
     }
 
-    public void showRecommendedFreindsView(Stage stage) throws IOException {
+    public void showRecommendedFreindsView(Stage stage,User user) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/laborator78/view/recommended-friends-view.fxml"));
         Parent loginView = loader.load();
         RecommendedFriendsController recommendedFreindsController = loader.getController();
         recommendedFreindsController.setApp(this);
+        recommendedFreindsController.setCurrentUser(user);
         Scene loginScene = new Scene(loginView);
         stage.setScene(loginScene);
         stage.show();
     }
 
-    public void showFriendRequestsView(Stage stage) throws IOException {
+    public void showFriendRequestsView(Stage stage,User user) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/laborator78/view/friendship-requests-view.fxml"));
         Parent loginView = loader.load();
         FriendshipRequestsController friendRequestsController = loader.getController();
         friendRequestsController.setApp(this);
+        friendRequestsController.setCurrentUser(user);
         Scene loginScene = new Scene(loginView);
         stage.setScene(loginScene);
         stage.show();
     }
 
 
-    public void showSentFriendRequestsView(Stage stage) throws IOException {
+    public void showSentFriendRequestsView(Stage stage, User user) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/laborator78/view/sent-friendship-requests-view.fxml"));
         Parent loginView = loader.load();
         SentFriendshipRequestsController sentFriendshipRequestsController = loader.getController();
         sentFriendshipRequestsController.setApp(this);
+        sentFriendshipRequestsController.setCurrentUser(user);
         Scene loginScene = new Scene(loginView);
         stage.setScene(loginScene);
         stage.show();
 
     }
 
-    public void showConversationView(Stage stage, User user) throws IOException {
+    public void showConversationView(Stage stage, User userWith,User user) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/laborator78/view/conversation-view.fxml"));
         Parent loginView = loader.load();
         ConversationController conversationController = loader.getController();
-        conversationController.setApp(this, user);
+        conversationController.setApp(this, userWith);
+        conversationController.setCurrentUser(user);
         Scene loginScene = new Scene(loginView);
         stage.setScene(loginScene);
         stage.show();
@@ -201,4 +199,17 @@ public class HelloApplication extends Application {
         launch();
     }
 
+    public void openUserView(Stage window, User currentUser) throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/laborator78/view/user-view.fxml"));
+        Parent userView = loader.load();
+
+        UserController userController = loader.getController();
+        userController.setApp(this);
+        userController.setUser(currentUser); // Pass user-specific session data
+
+        Stage userStage = new Stage();
+        userStage.setScene(new Scene(userView));
+        userStage.show();
+
+    }
 }

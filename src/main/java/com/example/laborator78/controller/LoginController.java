@@ -25,6 +25,7 @@ public class LoginController {
     private PasswordField passwordField;
 
     private HelloApplication app;
+    private User currentUser;
 
 
     public void setApp(HelloApplication app) {
@@ -32,27 +33,23 @@ public class LoginController {
     }
 
     public void onSubmitButtonClick(ActionEvent actionEvent) {
-        // Get data from fields
-        String email = emailField.getText();
+        // Example: Authenticate user based on input fields
+        String username = emailField.getText();
         String password = passwordField.getText();
 
-        // Check if the password and confirm password match else show an pop up error
-        User user = app.service.findUserByEmailAndPassword(email, password);
-        if (user!=null) {
+        var userOptional = app.service.findUserByEmailAndPassword(username, password);
+
+        if (userOptional!=null) {
+            currentUser = userOptional;
             try {
-                app.user = user;
                 Stage window = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
-                app.showUserView(window);
-            } catch (IOException e) {
+                app.openUserView(window,currentUser);
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         } else {
-            try {
-                Stage window = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
-                app.showHelloView(window);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            System.out.println("Invalid credentials");
+            app.showError("Invalid credentials. Please try again.");
         }
     }
 

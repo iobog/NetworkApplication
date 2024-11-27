@@ -1,0 +1,185 @@
+/* Root container */
+.root {
+    -fx-background-color: #ECE5DD; /* WhatsApp light background */
+    -fx-padding: 10;
+    -fx-font-family: "Segoe UI", Arial, sans-serif;
+}
+
+/* Header styles */
+.header {
+    -fx-background-color: #075E54; /* WhatsApp green */
+    -fx-padding: 15;
+    -fx-border-radius: 5;
+    -fx-alignment: center-left;
+}
+
+.header Label {
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}
+
+.back-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-cursor: hand;
+}
+
+.back-button:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Conversation List */
+.conversation-list {
+    -fx-background-color: white;
+    -fx-border-radius: 10;
+    -fx-padding: 5;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 5, 0, 0, 1);
+    -fx-font-size: 14px;
+}
+
+/* Individual Message Bubbles */
+.message-bubble {
+    -fx-padding: 10;
+    -fx-background-color: #DCF8C6; /* Light green for sent messages */
+    -fx-background-radius: 20;
+    -fx-border-radius: 20;
+    -fx-max-width: 75%;
+    -fx-min-width: 30%;
+    -fx-wrap-text: true;
+}
+
+.message-bubble .incoming {
+    -fx-background-color: #FFFFFF; /* White for incoming messages */
+    -fx-border-color: #DDDDDD;
+    -fx-border-width: 1;
+}
+
+/* Reply Box */
+.reply-box {
+    -fx-background-color: #D9FDD3; /* Light green for replies */
+    -fx-padding: 10;
+    -fx-border-radius: 10;
+    -fx-alignment: center-left;
+}
+
+.reply-label {
+    -fx-text-fill: #075E54;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+}
+
+.clear-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #075E54;
+    -fx-cursor: hand;
+}
+
+.clear-button:hover {
+    -fx-background-color: rgba(7, 94, 84, 0.2);
+}
+
+/* Input Box */
+.input-box {
+    -fx-background-color: #FFFFFF;
+    -fx-padding: 10;
+    -fx-border-radius: 10;
+    -fx-alignment: center-left;
+    -fx-spacing: 10;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 5, 0, 0, 1);
+}
+
+.message-field {
+    -fx-background-color: #F6F6F6;
+    -fx-border-radius: 20;
+    -fx-border-color: #D1D1D1;
+    -fx-padding: 5 10;
+    -fx-font-size: 14px;
+}
+
+.send-button {
+    -fx-background-color: #075E54;
+    -fx-text-fill: white;
+    -fx-border-radius: 20;
+    -fx-padding: 5 15;
+    -fx-cursor: hand;
+}
+
+.send-button:hover {
+    -fx-background-color: #0B6C5A;
+}
+
+/* ScrollView for the conversation list */
+.list-view {
+    -fx-background-color: #F5F5F5;
+    -fx-border-radius: 5;
+    -fx-padding: 10;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 5, 0, 0, 1);
+}
+
+/* Spacing between messages */
+.message-bubble + .message-bubble {
+    -fx-margin-top: 5px;
+}
+
+/* Add a dark background for incoming messages */
+.incoming .message-bubble {
+    -fx-background-color: #FFFFFF; /* White for incoming messages */
+    -fx-border-color: #DDDDDD;
+    -fx-border-width: 1;
+}
+
+.incoming .message-bubble .message-text {
+    -fx-text-fill: #333;
+}
+
+/* Add shadows to message boxes */
+.message-bubble {
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 4, 0, 0, 4);
+}
+
+/* Center Align Message bubbles */
+.message-bubble .outgoing {
+    -fx-alignment: center-right;
+}
+
+.message-bubble .incoming {
+    -fx-alignment: center-left;
+}
+
+/* Make messages appear in left or right alignment based on user */
+.outgoing {
+    -fx-background-color: #DCF8C6;
+    -fx-text-fill: #333;
+    -fx-align: right;
+}
+
+.incoming {
+    -fx-background-color: white;
+    -fx-text-fill: #333;
+    -fx-align: left;
+}
+
+/* Improve readability for long text */
+.message-bubble .message-text {
+    -fx-text-fill: #333;
+    -fx-font-size: 14px;
+}
+
+/* Scrollbar customization */
+.scroll-bar:vertical {
+    -fx-background-color: #F1F1F1;
+    -fx-base: #CCCCCC;
+}
+
+.scroll-bar .thumb {
+    -fx-background-color: #B3B3B3;
+}
+
+.scroll-bar .track {
+    -fx-background-color: #F1F1F1;
+}
+.sendmessageBox {
+    -fx-background-color: #FFFDD0; /* Cream color */
+}

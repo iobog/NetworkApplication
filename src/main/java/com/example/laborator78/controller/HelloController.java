@@ -55,4 +55,43 @@ public class HelloController {
             app.showError("Unable to load the login view. Please try again.");
         }
     }
+
+//    @FXML
+//    public void onSignupButtonClick(ActionEvent actionEvent) throws IOException {
+//// Open Signup Window
+//        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/laborator78/view/signup-view.fxml"));
+//        Parent signupView = loader.load();
+//
+//        // Create a new Stage for the Signup window
+//        Stage signupStage = new Stage();
+//        signupStage.setTitle("Sign Up");
+//        signupStage.setScene(new Scene(signupView));
+//
+//        // Pass the application reference to the SignupController
+//        SignupController signupController = loader.getController();
+//        signupController.setApp(app);
+//
+//        // Show the new window
+//        signupStage.show();
+//    }
+//
+//
+//    @FXML
+//    public void onLoginButtonClick(ActionEvent actionEvent) throws IOException {
+//        // Open Login Window
+//        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/laborator78/view/login-view.fxml"));
+//        Parent loginView = loader.load();
+//
+//        // Create a new Stage for the Login window
+//        Stage loginStage = new Stage();
+//        loginStage.setTitle("Login");
+//        loginStage.setScene(new Scene(loginView));
+//
+//        // Pass the application reference to the LoginController
+//        LoginController loginController = loader.getController();
+//        loginController.setApp(app);
+//
+//        // Show the new window
+//        loginStage.show();
+//    }
 }

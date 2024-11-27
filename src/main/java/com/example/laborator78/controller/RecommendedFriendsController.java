@@ -33,14 +33,19 @@ public class RecommendedFriendsController {
     ObservableList<User> model = FXCollections.observableArrayList();
 
     private HelloApplication app;
+    private User currentUser;
 
     @FXML
     private ListView<User> recommendedFriendsListView;
 
+    public void setCurrentUser(User currentUser) {
+        this.currentUser = currentUser;
+        initModel();
+    }
 
     public void setApp(HelloApplication helloApplication) {
         this.app = helloApplication;
-        initModel();
+
     }
 
 
@@ -54,7 +59,7 @@ public class RecommendedFriendsController {
     }
 
     private void initModel() {
-        Iterable<User> requests = app.service.getRecommendedFriends(app.user);
+        Iterable<User> requests = app.service.getRecommendedFriends(currentUser);
         List<User> users = StreamSupport.stream(requests.spliterator(), false)
                 .collect(Collectors.toList());
         model.setAll(users);
@@ -67,7 +72,7 @@ public class RecommendedFriendsController {
 
         try{
             Stage window = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
-            app.showUserView(window);
+            app.showUserView(window,currentUser);
         }
         catch (Exception e){
             e.printStackTrace();
@@ -81,7 +86,7 @@ public class RecommendedFriendsController {
         try{
             User user = tableView.getSelectionModel().getSelectedItem();
             if(user != null){
-                app.service.sendFriendshipRequest(app.user, user);
+                app.service.sendFriendshipRequest(currentUser, user);
                 app.showSucces("Friendship request sent!");
                 initModel();
             }

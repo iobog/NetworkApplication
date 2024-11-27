@@ -31,6 +31,11 @@ public class SignupController {
 
 
     private HelloApplication app;
+    private User currentUser;
+
+    public void setCurrentUser(User currentUser) {
+        this.currentUser = currentUser;
+    }
 
     public void setApp(HelloApplication app) {
         this.app = app;
@@ -53,25 +58,19 @@ public class SignupController {
         String password = passwordField.getText();
         String confirmPassword = confirmPasswordField.getText();// Get data from fields
 
-        // Check if the password and confirm password match else show an pop up error
-        if (!password.equals(confirmPassword)) {
-            // Show an error if the passwords don't match
-            showAlert("Password mismatch", "The passwords you entered do not match.");
-
-        }
-
         User user = new User(firstName, lastName, email, password);
 
         if(app.service.findUserByEmail(email)){
             showAlert("Error", "User already exists");
-            return;
         }
-
+        else if(!password.equals(confirmPassword)){
+            showAlert("Error", "Passwords do not match");
+        }
         try{
             app.service.addUser(user);
             showAlert("Success", "User has been successfully created.");
             Stage window = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
-            app.showUserView(window);
+            app.showUserView(window,currentUser);
 
         }
         catch (Exception e){

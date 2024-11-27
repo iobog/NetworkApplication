@@ -1,6 +1,7 @@
 package com.example.laborator78.controller;
 
 import com.example.laborator78.HelloApplication;
+import com.example.laborator78.domain.User;
 import com.example.laborator78.domain.UserRequestDTO;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -37,13 +38,17 @@ public class FriendshipRequestsController {
     @FXML
     public Button backButton;
 
-    ObservableList<UserRequestDTO> model = FXCollections.observableArrayList();
+    private ObservableList<UserRequestDTO> model = FXCollections.observableArrayList();
 
-    HelloApplication app;
+    private HelloApplication app;
+    private User currentUser;
 
     public void setApp(HelloApplication app){
         this.app = app;
         //this.app.service.addObserver(this);
+    }
+    public void setCurrentUser(User currentUser){
+        this.currentUser = currentUser;
         initModel();
     }
 
@@ -59,9 +64,9 @@ public class FriendshipRequestsController {
     }
 
     private void initModel() {
-        var id = app.user.getId();
+        var id = currentUser.getId();
 
-        Iterable<UserRequestDTO> requests = app.service.getFriendshipRequests(app.user);
+        Iterable<UserRequestDTO> requests = app.service.getFriendshipRequests(currentUser);
         List<UserRequestDTO> users = StreamSupport.stream(requests.spliterator(), false)
                 .collect(Collectors.toList());
         model.setAll(users);
@@ -72,7 +77,7 @@ public class FriendshipRequestsController {
         try{
             UserRequestDTO userRequestDTO = tableView.getSelectionModel().getSelectedItem();
             if(userRequestDTO != null){
-                app.service.acceptFriendshipRequest(app.user, userRequestDTO);
+                app.service.acceptFriendshipRequest(currentUser, userRequestDTO);
                 app.showSucces("Friendship request accepted!");
                 initModel();
             }
@@ -86,7 +91,7 @@ public class FriendshipRequestsController {
     public void onBackButtonClick(ActionEvent actionEvent) {
         try{
             Stage window = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
-            app.showUserView(window);
+            app.showUserView(window,currentUser);
         }
         catch (Exception e){
             e.printStackTrace();
@@ -98,7 +103,7 @@ public class FriendshipRequestsController {
         try{
             UserRequestDTO userRequestDTO = tableView.getSelectionModel().getSelectedItem();
             if(userRequestDTO != null){
-                app.service.rejectFriendshipRequest(app.user, userRequestDTO);
+                app.service.rejectFriendshipRequest(currentUser, userRequestDTO);
                 app.showSucces("Friendship request rejected!");
                 initModel();
             }

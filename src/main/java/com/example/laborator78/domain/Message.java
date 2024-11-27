@@ -21,6 +21,9 @@ public class Message extends Entity<Long>{
 
 
 
+
+
+
     public Long getFrom_id() {
         return from_id;
     }

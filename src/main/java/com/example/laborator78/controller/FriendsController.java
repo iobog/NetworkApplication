@@ -20,14 +20,14 @@ public class FriendsController {
 
     @FXML
     private ListView<User> contactList;
+    private User currentUser;
 
     public void setApp(HelloApplication app) {
         this.app = app;
-        loadFriendsList();
     }
 
     private void loadFriendsList() {
-        List<Optional<User>> friends = app.service.getListFriends(app.user);
+        List<Optional<User>> friends = app.service.getListFriends(currentUser);
         ObservableList<User> friendsList = FXCollections.observableArrayList();
         for (Optional<User> friend : friends) {
             friend.ifPresent(friendsList::add);
@@ -51,7 +51,7 @@ public class FriendsController {
     public void onBackButtonClick(ActionEvent actionEvent) {
         try{
             Stage window = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
-            app.showUserView(window);
+            app.showUserView(window,currentUser);
         }
         catch (Exception e){
             e.printStackTrace();
@@ -65,12 +65,17 @@ public class FriendsController {
         User user = contactList.getSelectionModel().getSelectedItem();
         try{
             Stage window = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
-            app.showConversationView(window, user);
+            app.showConversationView(window, user,currentUser);
         }
         catch (Exception e){
             e.printStackTrace();
             app.showError("Unable to load the Conversation. Please try again.");
         }
 
+    }
+
+    public void setUser(User user) {
+        this.currentUser = user;
+        loadFriendsList();
     }
 }

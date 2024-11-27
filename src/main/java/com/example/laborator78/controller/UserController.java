@@ -46,88 +46,33 @@ public class UserController {
     private Label lastNameField;
 
 
+
     private Network service;
     //private Stage dialogStage;
 
     private HelloApplication app;
+    private User currentUser;
 
     public void setApp(HelloApplication app) {
         this.app = app;
         service = app.service;
-        firstNameField.setText(app.user.getFirstName());
-        lastNameField.setText(app.user.getLastName());
+    }
+
+    public void setUser(User user) {
+        this.currentUser = user;
+        firstNameField.setText(user.getFirstName());
+        lastNameField.setText(user.getLastName());
     }
 
     public void onShowFrindsButtonClick(ActionEvent actionEvent) {
         try {
             Stage window = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
-            app.showFriendsView(window);
+            app.showFriendsView(window, currentUser);
         }
         catch (Exception e) {
             e.printStackTrace();
         }
     }
-
-    public void onAddContactButtonClick() {
-//        // Fetch non-friend users
-//        List<User> nonFriendUsers = service.getNonFriendUsers(currentUser);
-//
-//        // Display in the nonFriendListView
-//        if (nonFriendUsers.isEmpty()) {
-//            showAlert("No Users", "There are no users to add.");
-//            return;
-//        }
-//
-//        nonFriendListView.getItems().setAll(nonFriendUsers);
-//
-//        // Custom cell factory to show "Request" button for each user
-//        nonFriendListView.setCellFactory(listView -> new ListCell<User>() {
-//            @Override
-//            protected void updateItem(User user, boolean empty) {
-//                super.updateItem(user, empty);
-//                if (empty || user == null) {
-//                    setGraphic(null);
-//                    return;
-//                }
-//
-//                HBox container = new HBox(10);
-//                Label userName = new Label(user.getFirstName() + " " + user.getLastName());
-//                Button requestButton = new Button("Request");
-//
-//                // Action for the request button
-//                requestButton.setOnAction(event -> sendContactRequest(user));
-//
-//                container.getChildren().addAll(userName, requestButton);
-//                setGraphic(container);
-//            }
-//        });
-//
-//        // Show the pane containing the list
-//        addContactPane.setVisible(true);
-    }
-
-
-    //    // Method to handle sending a contact request
-//    private void sendContactRequest(User user) {
-//        boolean success = service.sendContactRequest(currentUser, user);
-//        if (success) {
-//            showAlert("Request Sent", "Contact request sent to " + user.getFirstName() + ".");
-//            nonFriendListView.getItems().remove(user); // Remove user from list on success
-//        } else {
-//            showAlert("Request Failed", "Failed to send request to " + user.getFirstName() + ".");
-//        }
-//    }
-//
-//    // Hide the Add Contact Pane
-    @FXML
-    private void onCloseAddContactPane() {
-        addContactPane.setVisible(false);
-    }
-
-    public void onDeleteContactButtonClick() {
-
-    }
-
     public void onLogoutButtonClick(ActionEvent actionEvent) {
         try {
             Stage window = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
@@ -147,7 +92,7 @@ public class UserController {
 
             Optional<ButtonType> result = alert.showAndWait();
             if (result.get() == ButtonType.OK) {
-                service.removeUser(app.user.getId());
+                service.removeUser(currentUser.getId());
                 showAlert("Account deleted", "Account deleted");
                 Stage window = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
                 app.showHelloView(window);
@@ -183,7 +128,7 @@ public class UserController {
         try {
             Stage window = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
             //Stage window = (Stage)mainBox.getScene().getWindow();
-            app.showRecommendedFreindsView(window);
+            app.showRecommendedFreindsView(window,currentUser);
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -194,7 +139,7 @@ public class UserController {
 
         try {
             Stage window = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
-            app.showFriendRequestsView(window);
+            app.showFriendRequestsView(window,currentUser);
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -205,10 +150,11 @@ public class UserController {
 
         try {
             Stage window = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
-            app.showSentFriendRequestsView(window);
+            app.showSentFriendRequestsView(window,currentUser);
         }
         catch (Exception e) {
             e.printStackTrace();
         }
     }
+
 }

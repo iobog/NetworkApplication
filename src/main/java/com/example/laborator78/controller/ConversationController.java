@@ -1,9 +1,11 @@
 package com.example.laborator78.controller;
 
 import com.example.laborator78.HelloApplication;
-import com.example.laborator78.domain.Message;
 import com.example.laborator78.domain.MessageDTO;
 import com.example.laborator78.domain.User;
+import com.example.laborator78.service.Network;
+import com.example.laborator78.utils.events.Event;
+import com.example.laborator78.utils.observer.Observer;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -22,49 +24,51 @@ import javafx.stage.Stage;
 import java.util.List;
 import java.util.Optional;
 
-public class ConversationController {
+public class ConversationController implements Observer {
 
     @FXML
     public ListView<MessageDTO> conversationList;
-
     @FXML
     public TextField messageField;
     @FXML
     public Label conversationName;
     @FXML
-    public Label selectedReplyMessageLable;
+    public Label selectedReplyMessageLabel;
     @FXML
     public HBox replyBox;
 
-
     private MessageDTO selectedMessageForReply;
-
-    private User user;
-    HelloApplication app;
+    private User user, currentUser;
+    private HelloApplication app;
+    //private Network networkService;
+    private ObservableList<MessageDTO> conversationMessages;
 
     public void setApp(HelloApplication app, User user) {
         this.app = app;
         this.user = user;
+        //this.networkService = app.service; // Assuming HelloApplication provides the Network service.
+        app.service.addObserver(this); // Add this controller as an observer
         conversationName.setText(user.getFirstName() + " " + user.getLastName());
+    }
+
+    public void setCurrentUser(User currentUser) {
+        this.currentUser = currentUser;
         loadConversation();
     }
 
-
     private void loadConversation() {
-        List<MessageDTO> messages = app.service.listMessages(app.user,user);
-        ObservableList<MessageDTO> friendsList = FXCollections.observableArrayList();
-        friendsList.setAll(messages);
+        List<MessageDTO> messages = app.service.listMessages(currentUser, user);
+        conversationMessages = FXCollections.observableArrayList(messages);
 
-        conversationList.setItems(friendsList);
+        conversationList.setItems(conversationMessages);
         conversationList.setCellFactory(param -> new ListCell<>() {
             @Override
             protected void updateItem(MessageDTO message, boolean empty) {
                 super.updateItem(message, empty);
-                if (empty || user == null) {
-                    //setText(null);
+                if (empty || message == null) {
                     setGraphic(null);
                 } else {
-                    VBox messageBox = new VBox(5);
+                    VBox messageBox = new VBox(3);
 
                     if (message.getReplyMessage().isPresent()) {
                         Text replyText = new Text("Reply to: [" + message.getReplyMessage().get() + "]");
@@ -73,7 +77,9 @@ public class ConversationController {
                     }
 
                     TextFlow messageTextFlow = new TextFlow(new Text(message.getMessage()));
-                    messageTextFlow.setStyle("-fx-background-color: " + (message.getFrom_id().equals(user.getId()) ? "#d3d3d3" : "#f0f8ff") + "; -fx-padding: 10; -fx-background-radius: 10;");
+                    messageTextFlow.setStyle("-fx-background-color: " +
+                            (message.getFrom_id().equals(user.getId()) ? "#d3d3d3" : "#f0f8ff") +
+                            "; -fx-padding: 10; -fx-background-radius: 10;");
 
                     messageBox.getChildren().add(messageTextFlow);
 
@@ -81,8 +87,7 @@ public class ConversationController {
                     container.getChildren().add(messageBox);
                     if (message.getFrom_id().equals(user.getId())) {
                         container.setStyle("-fx-alignment: CENTER-LEFT; -fx-padding: 5");
-                    }
-                    else {
+                    } else {
                         container.setStyle("-fx-alignment: CENTER-RIGHT; -fx-padding: 5");
                     }
                     setGraphic(container);
@@ -95,41 +100,35 @@ public class ConversationController {
             if (selectedMessage != null) {
                 selectedMessageForReply = selectedMessage;
                 replyBox.setVisible(true);
-                selectedReplyMessageLable.setText("Reply to: [" + selectedMessage.getMessage() + "]");
+                selectedReplyMessageLabel.setText("Reply to: [" + selectedMessage.getMessage() + "]");
                 messageField.setPromptText("Reply to " + selectedMessage.getMessage());
             }
         });
     }
 
-
     public void onSendButtonClick(ActionEvent actionEvent) {
-        try{
+        try {
             String message = messageField.getText();
 
-            if(selectedMessageForReply!=null)
-                app.service.sendMessage(app.user,user,message, Optional.ofNullable(selectedMessageForReply.getId()));
+            if (selectedMessageForReply != null)
+                app.service.sendMessage(currentUser, user, message, Optional.ofNullable(selectedMessageForReply.getId()));
             else
-                app.service.sendMessage(app.user,user,message,Optional.empty());
+                app.service.sendMessage(currentUser, user, message, Optional.empty());
             messageField.clear();
             clearReply();
-            loadConversation();
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             app.showError("Unable to send the message. Please try again.");
         }
     }
 
     public void onBackButtonClick(ActionEvent actionEvent) {
-        try{
+        try {
             Stage window = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
-            app.showFriendsView(window);
-        }
-        catch (Exception e){
-            //e.printStackTrace();
+            app.showFriendsView(window, currentUser);
+        } catch (Exception e) {
             app.showError("Unable to load the user view. Please try again.");
         }
-
     }
 
     public void onClearReplyButtonClicked(ActionEvent actionEvent) {
@@ -137,9 +136,33 @@ public class ConversationController {
     }
 
     private void clearReply() {
+
         selectedMessageForReply = null;
         replyBox.setVisible(false);
-        selectedReplyMessageLable.setText(null);
+        selectedReplyMessageLabel.setText(null);
         messageField.setPromptText("Message");
+    }
+
+    @Override
+    public void update(Event event) {
+        if (event.getType().equals("message_sent")) {
+            MessageDTO newMessage = (MessageDTO) event.getData();
+            if ((newMessage.getFrom_id().equals(user.getId()) || newMessage.getTo_id().equals(user.getId())) &&
+                    (newMessage.getFrom_id().equals(currentUser.getId()) || newMessage.getTo_id().equals(currentUser.getId()))) {
+                conversationMessages.add(newMessage); // Add new message to the list
+                conversationList.scrollTo(conversationMessages.size() - 1); // Scroll to the latest message
+            }
+        }
+    }
+
+    @Override
+    public void update(String eventType, Object data) {
+        if ("message_sent".equals(eventType) && data instanceof MessageDTO newMessage) {
+            if ((newMessage.getFrom_id().equals(user.getId()) || newMessage.getTo_id().equals(user.getId())) &&
+                    (newMessage.getFrom_id().equals(currentUser.getId()) || newMessage.getTo_id().equals(currentUser.getId()))) {
+                conversationMessages.add(newMessage);
+                conversationList.scrollTo(conversationMessages.size() - 1);
+            }
+        }
     }
 }

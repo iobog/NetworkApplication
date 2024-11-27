@@ -2,37 +2,34 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.shape.*?>
-<?import javafx.scene.text.TextFlow?>
 
-<?import org.controlsfx.control.ListActionView?>
-<AnchorPane prefHeight="300.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.laborator78.controller.UserController">
+<AnchorPane prefHeight="600.0" prefWidth="600.0" stylesheets="@../css/user-view.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.laborator78.controller.UserController">
 
-    <VBox spacing="10" style="-fx-padding: 10">
-        <HBox spacing="5.0">
-            <Label fx:id="firstNameField" style="-fx-font-size: 24px;" text="Name" />
-            <Label fx:id="lastNameField" style="-fx-font-size: 24px;" text="Surname" />
+    <VBox spacing="10" style="-fx-padding: 30">
+
+        <HBox spacing="10.0">
+            <HBox spacing="5.0">
+                <Label fx:id="firstNameField" style="-fx-font-size: 24px;" text="Name" />
+                <Label fx:id="lastNameField" style="-fx-font-size: 24px;" text="Surname" />
+            </HBox>
+            <VBox alignment="CENTER" spacing="2.0">
+                <Button onAction="#onLogoutButtonClick" prefWidth="150" style="-fx-font-size: 12px;" text="Log Out" />
+                <Button onAction="#onDeleteAccountButtonClick" prefWidth="150" style="-fx-font-size: 12px;" text="Delete Account" />
+            </VBox>
         </HBox>
-        <Separator>
-
-        </Separator>
+        <Separator />
 
         <HBox>
             <VBox alignment="CENTER_LEFT" prefWidth="600.0" spacing="10.0">
-                <Button onAction="#onShowFrindsButtonClick" style="-fx-font-size: 14px;" text="Friends" />
-                <Button onAction="#onShowRecommendedFriendsButtonClick" style="-fx-font-size: 14px;" text="Recommended" />
-                <Button onAction="#onShowFriendsRequestButtonClick" style="-fx-font-size: 14px;" text="Requests" />
-                <Button onAction="#onShowSentFriendsRequestButtonClick" style="-fx-font-size: 14px;" text="Sent Requests" />
-                <Button onAction="#onLogoutButtonClick" style="-fx-font-size: 14px;" text="Log Out" />
-                <Button onAction="#onDeleteAccountButtonClick" style="-fx-font-size: 14px;" text="Delete Account" />
+                <Button onAction="#onShowFrindsButtonClick" prefWidth="150" style="-fx-font-size: 14px;" text="Friends" />
+                <Button onAction="#onShowRecommendedFriendsButtonClick" prefWidth="150" style="-fx-font-size: 14px;" text="Recommended" />
+                <Button onAction="#onShowFriendsRequestButtonClick" prefWidth="150" style="-fx-font-size: 14px;" text="Requests" />
+                <Button onAction="#onShowSentFriendsRequestButtonClick" prefWidth="150" style="-fx-font-size: 14px;" text="Sent Requests" />
             </VBox>
 
             <!-- main -->
             <VBox fx:id="mainBox">
-
             </VBox>
         </HBox>
-
     </VBox>
-
 </AnchorPane>

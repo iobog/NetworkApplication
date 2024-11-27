@@ -32,8 +32,9 @@ public class SentFriendshipRequestsController {
     public Button buttonDeleteRequest;
 
 
-    HelloApplication app;
-    ObservableList<UserRequestDTO> model = FXCollections.observableArrayList();
+    private HelloApplication app;
+    private User currentUser;
+    private ObservableList<UserRequestDTO> model = FXCollections.observableArrayList();
 
     @FXML
     private ListView<User> recommendedFriendsListView;
@@ -41,9 +42,13 @@ public class SentFriendshipRequestsController {
 
     public void setApp(HelloApplication helloApplication) {
         this.app = helloApplication;
-        initModel();
+
     }
 
+    public void setCurrentUser(User currentUser) {
+        this.currentUser = currentUser;
+        initModel();
+    }
 
     @FXML
     public void initialize() {
@@ -56,7 +61,7 @@ public class SentFriendshipRequestsController {
     }
 
     private void initModel() {
-        Iterable<UserRequestDTO> requests = app.service.getSentFriendshipRequests(app.user);
+        Iterable<UserRequestDTO> requests = app.service.getSentFriendshipRequests(currentUser);
         List<UserRequestDTO> users = StreamSupport.stream(requests.spliterator(), false)
                 .collect(Collectors.toList());
         model.setAll(users);
@@ -75,7 +80,7 @@ public class SentFriendshipRequestsController {
         try{
 
             Stage window = (Stage) buttonDeleteRequest.getScene().getWindow();
-            app.showUserView(window);
+            app.showUserView(window,currentUser);
         }
         catch (Exception e) {
             e.printStackTrace();

@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Vector;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.StreamSupport;
 
 public class Network implements Observable {
@@ -262,34 +263,76 @@ public class Network implements Observable {
 
     //send message,
     // get my messages
+//
+//    public void sendMessage(User from, User to, String message, Optional<Long> reply_message_id) {
+//        Message message1 = new Message(from.getId(), to.getId(), message, java.time.LocalDateTime.now(), reply_message_id);
+//        repositoryMessage.save(message1);
+//    }
+//
+//
+//
+//    public List<MessageDTO> listMessages(User user1,User user2) {
+//        List<MessageDTO>messages = new ArrayList<>();
+//        repositoryMessage.findAll().forEach(message -> {
+//            if (message.getTo_id().equals(user1.getId()) && message.getFrom_id().equals(user2.getId())
+//            || (message.getTo_id().equals(user2.getId()) && message.getFrom_id().equals(user1.getId()))) {
+//
+//                Optional<String> strReplayMessage = Optional.empty();
+//                if (message.getReply_massage_id().isPresent()) {
+//                    Optional<Message> replyMessage = repositoryMessage.findOne(message.getReply_massage_id().get());
+//                    if (replyMessage.isPresent()) {
+//                        strReplayMessage = Optional.of(replyMessage.get().getMessage());
+//                    }
+//                }
+//
+//                MessageDTO messageDTO = new MessageDTO(message.getId(), message.getMessage(), message.getCreated_at(), strReplayMessage, message.getFrom_id(), message.getTo_id());
+//                messages.add(messageDTO);
+//
+//            }
+//        });
+//        messages.sort((m1,m2)->m1.getCreated_at().compareTo(m2.getCreated_at()));
+//        return messages;
+//    }
 
     public void sendMessage(User from, User to, String message, Optional<Long> reply_message_id) {
         Message message1 = new Message(from.getId(), to.getId(), message, java.time.LocalDateTime.now(), reply_message_id);
         repositoryMessage.save(message1);
+
+        // Notify observers about the new message
+        notifyObservers("message_sent", new MessageDTO(
+                message1.getId(),
+                message1.getMessage(),
+                message1.getCreated_at(),
+                reply_message_id.map(id -> repositoryMessage.findOne(id).orElse(new Message(0L, 0L, "", null, Optional.empty())).getMessage()),
+                from.getId(),
+                to.getId()
+        ));
     }
 
-
-
-    public List<MessageDTO> listMessages(User user1,User user2) {
-        List<MessageDTO>messages = new ArrayList<>();
+    public List<MessageDTO> listMessages(User user1, User user2) {
+        List<MessageDTO> messages = new ArrayList<>();
         repositoryMessage.findAll().forEach(message -> {
             if (message.getTo_id().equals(user1.getId()) && message.getFrom_id().equals(user2.getId())
-            || (message.getTo_id().equals(user2.getId()) && message.getFrom_id().equals(user1.getId()))) {
+                    || (message.getTo_id().equals(user2.getId()) && message.getFrom_id().equals(user1.getId()))) {
 
-                Optional<String> strReplayMessage = Optional.empty();
+                AtomicReference<Optional<String>> strReplyMessage = new AtomicReference<>(Optional.empty());
                 if (message.getReply_massage_id().isPresent()) {
                     Optional<Message> replyMessage = repositoryMessage.findOne(message.getReply_massage_id().get());
-                    if (replyMessage.isPresent()) {
-                        strReplayMessage = Optional.of(replyMessage.get().getMessage());
-                    }
+                    replyMessage.ifPresent(value -> strReplyMessage.set(Optional.of(value.getMessage())));
                 }
 
-                MessageDTO messageDTO = new MessageDTO(message.getId(), message.getMessage(), message.getCreated_at(), strReplayMessage, message.getFrom_id(), message.getTo_id());
+                MessageDTO messageDTO = new MessageDTO(
+                        message.getId(),
+                        message.getMessage(),
+                        message.getCreated_at(),
+                        strReplyMessage.get(),
+                        message.getFrom_id(),
+                        message.getTo_id()
+                );
                 messages.add(messageDTO);
-
             }
         });
-        messages.sort((m1,m2)->m1.getCreated_at().compareTo(m2.getCreated_at()));
+        messages.sort((m1, m2) -> m1.getCreated_at().compareTo(m2.getCreated_at()));
         return messages;
     }
 
