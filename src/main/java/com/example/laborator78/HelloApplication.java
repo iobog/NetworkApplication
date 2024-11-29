@@ -1,14 +1,11 @@
 package com.example.laborator78;
 
 import com.example.laborator78.controller.*;
-import com.example.laborator78.domain.Friendship;
-import com.example.laborator78.domain.Message;
 import com.example.laborator78.domain.User;
 import com.example.laborator78.domain.validators.FriendshipRequestValidator;
 import com.example.laborator78.domain.validators.FriendshipValidator;
 import com.example.laborator78.domain.validators.MessageValidator;
 import com.example.laborator78.domain.validators.UserValidator;
-import com.example.laborator78.repository.Repository;
 import com.example.laborator78.repository.database.FriendshipDataBaseRepository;
 import com.example.laborator78.repository.database.MessageDataBaseRepository;
 import com.example.laborator78.repository.database.RequestDataBaseRepository;
@@ -16,11 +13,9 @@ import com.example.laborator78.repository.database.UserDataBaseRepository;
 import com.example.laborator78.service.Network;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -28,7 +23,6 @@ import java.io.IOException;
 public class HelloApplication extends Application {
 
     public Network service;
-    //public User user;
 
     @Override
     public void start(Stage stage) throws IOException {
@@ -51,31 +45,18 @@ public class HelloApplication extends Application {
 
         service = new Network(userRepository,friendshipRepository,requestRepository,messageRepository);
         //23  29
-        var user1 = service.findUser(Long.valueOf(23));
+        var user1 = service.findUser(Long.valueOf(32));
         if(user1.isPresent())
             this.showUserView(stage,user1.get());
        //initView(stage);
     }
 
     private void initView(Stage primaryStage) throws IOException {
-//        FXMLLoader loader = new FXMLLoader();
-//        loader.setLocation(getClass().getResource("/com/example/laborator78/view/hello-view.fxml"));
-//        Scene scene = new Scene(loader.load(), 320, 240);
-//        primaryStage.setTitle("Welcome!");
-//
-//        HelloController controller = loader.getController();
-//        //controller.setService(service, primaryStage);
-//        controller.setApp(this);
-//
-//        primaryStage.setScene(scene);
-//        primaryStage.show();
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/laborator78/view/hello-view.fxml"));
         Scene scene = new Scene(loader.load(), 320, 240);
         primaryStage.setTitle("Welcome!");
-
         HelloController controller = loader.getController();
         controller.setApp(this);
-
         primaryStage.setScene(scene);
         primaryStage.show();
     }
@@ -129,7 +110,7 @@ public class HelloApplication extends Application {
         stage.show();
     }
 
-    public void showRecommendedFreindsView(Stage stage,User user) throws IOException {
+    public void showRecommendedFriendsView(Stage stage, User user) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/laborator78/view/recommended-friends-view.fxml"));
         Parent loginView = loader.load();
         RecommendedFriendsController recommendedFreindsController = loader.getController();

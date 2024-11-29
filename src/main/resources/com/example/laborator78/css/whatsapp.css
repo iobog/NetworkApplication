@@ -30,6 +30,26 @@
     -fx-background-color: rgba(255, 255, 255, 0.2);
 }
 
+/* Search Field Styles */
+.search-field {
+    -fx-background-color: #FFFFFF; /* White background for the search bar */
+    -fx-border-color: #DDDDDD;
+    -fx-border-width: 1;
+    -fx-border-radius: 15; /* Rounded edges */
+    -fx-padding: 5 10;
+    -fx-font-size: 14px;
+    -fx-text-fill: #333; /* Dark gray text color */
+}
+
+.search-field:focused {
+    -fx-border-color: #34B7F1; /* Light blue border on focus */
+    -fx-effect: dropshadow(gaussian, rgba(52, 183, 241, 0.5), 5, 0, 0, 2);
+}
+
+.search-field:hover {
+    -fx-border-color: #B3B3B3; /* Slightly darker border on hover */
+}
+
 /* Conversation List */
 .conversation-list {
     -fx-background-color: white;
@@ -83,8 +103,8 @@
 /* Input Box */
 .input-box {
     -fx-background-color: #FFFFFF;
+    -fx-border-radius: 20;
     -fx-padding: 10;
-    -fx-border-radius: 10;
     -fx-alignment: center-left;
     -fx-spacing: 10;
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 5, 0, 0, 1);
@@ -93,7 +113,7 @@
 .message-field {
     -fx-background-color: #F6F6F6;
     -fx-border-radius: 20;
-    -fx-border-color: #D1D1D1;
+    -fx-border-color: #black;
     -fx-padding: 5 10;
     -fx-font-size: 14px;
 }
@@ -179,7 +199,4 @@
 
 .scroll-bar .track {
     -fx-background-color: #F1F1F1;
-}
-.sendmessageBox {
-    -fx-background-color: #FFFDD0; /* Cream color */
 }

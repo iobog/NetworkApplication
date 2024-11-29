@@ -12,7 +12,7 @@
 
         </Separator>
 
-        <HBox spacing="10.0">
+        <HBox spacing="10.0" alignment="CENTER">
             <Button onAction="#onBackButtonClick" style="-fx-font-size: 14px;" text="Back" />
             <Button onAction="#onConversationButtonClick" style="-fx-font-size: 14px;" text="Message" />
         </HBox>

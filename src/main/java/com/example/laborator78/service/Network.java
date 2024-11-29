@@ -46,7 +46,9 @@ public class Network implements Observable {
 
     @Override
     public void notifyObservers(Event t) {
-
+        for(Observer observer : observers) {
+            observer.update(t);
+        }
     }
 
     @Override
@@ -298,7 +300,6 @@ public class Network implements Observable {
         Message message1 = new Message(from.getId(), to.getId(), message, java.time.LocalDateTime.now(), reply_message_id);
         repositoryMessage.save(message1);
 
-        // Notify observers about the new message
         notifyObservers("message_sent", new MessageDTO(
                 message1.getId(),
                 message1.getMessage(),
@@ -327,8 +328,7 @@ public class Network implements Observable {
                         message.getCreated_at(),
                         strReplyMessage.get(),
                         message.getFrom_id(),
-                        message.getTo_id()
-                );
+                        message.getTo_id());
                 messages.add(messageDTO);
             }
         });
