@@ -2,25 +2,17 @@ package com.example.laborator78.controller;
 
 import com.example.laborator78.HelloApplication;
 import com.example.laborator78.domain.User;
-import com.example.laborator78.domain.UserRequestDTO;
 import com.example.laborator78.service.Network;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Optional;
-
-import javafx.scene.Scene;
 
 public class UserController {
 
@@ -128,7 +120,7 @@ public class UserController {
         try {
             Stage window = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
             //Stage window = (Stage)mainBox.getScene().getWindow();
-            app.showRecommendedFreindsView(window,currentUser);
+            app.showRecommendedFriendsView(window,currentUser);
         }
         catch (Exception e) {
             e.printStackTrace();

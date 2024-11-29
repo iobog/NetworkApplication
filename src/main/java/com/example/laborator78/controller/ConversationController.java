@@ -3,7 +3,6 @@ package com.example.laborator78.controller;
 import com.example.laborator78.HelloApplication;
 import com.example.laborator78.domain.MessageDTO;
 import com.example.laborator78.domain.User;
-import com.example.laborator78.service.Network;
 import com.example.laborator78.utils.events.Event;
 import com.example.laborator78.utils.observer.Observer;
 import javafx.collections.FXCollections;
@@ -23,6 +22,7 @@ import javafx.stage.Stage;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class ConversationController implements Observer {
 
@@ -36,17 +36,18 @@ public class ConversationController implements Observer {
     public Label selectedReplyMessageLabel;
     @FXML
     public HBox replyBox;
+    @FXML
+    public TextField searchField;
 
     private MessageDTO selectedMessageForReply;
     private User user, currentUser;
     private HelloApplication app;
-    //private Network networkService;
     private ObservableList<MessageDTO> conversationMessages;
+    private ObservableList<MessageDTO> filteredMessages;
 
     public void setApp(HelloApplication app, User user) {
         this.app = app;
         this.user = user;
-        //this.networkService = app.service; // Assuming HelloApplication provides the Network service.
         app.service.addObserver(this); // Add this controller as an observer
         conversationName.setText(user.getFirstName() + " " + user.getLastName());
     }
@@ -59,8 +60,9 @@ public class ConversationController implements Observer {
     private void loadConversation() {
         List<MessageDTO> messages = app.service.listMessages(currentUser, user);
         conversationMessages = FXCollections.observableArrayList(messages);
+        filteredMessages = FXCollections.observableArrayList(messages); // Initially no filtering
 
-        conversationList.setItems(conversationMessages);
+        conversationList.setItems(filteredMessages);
         conversationList.setCellFactory(param -> new ListCell<>() {
             @Override
             protected void updateItem(MessageDTO message, boolean empty) {
@@ -104,6 +106,22 @@ public class ConversationController implements Observer {
                 messageField.setPromptText("Reply to " + selectedMessage.getMessage());
             }
         });
+
+        // Add listener for searchField changes
+        searchField.textProperty().addListener((observable, oldValue, newValue) -> {
+            filterMessages(newValue);
+        });
+    }
+
+    private void filterMessages(String query) {
+        if (query == null || query.isEmpty()) {
+            filteredMessages.setAll(conversationMessages); // If no query, show all messages
+        } else {
+            String lowerCaseQuery = query.toLowerCase();
+            filteredMessages.setAll(conversationMessages.stream()
+                    .filter(message -> message.getMessage().toLowerCase().contains(lowerCaseQuery))
+                    .collect(Collectors.toList()));
+        }
     }
 
     public void onSendButtonClick(ActionEvent actionEvent) {
@@ -136,7 +154,6 @@ public class ConversationController implements Observer {
     }
 
     private void clearReply() {
-
         selectedMessageForReply = null;
         replyBox.setVisible(false);
         selectedReplyMessageLabel.setText(null);
@@ -160,9 +177,11 @@ public class ConversationController implements Observer {
         if ("message_sent".equals(eventType) && data instanceof MessageDTO newMessage) {
             if ((newMessage.getFrom_id().equals(user.getId()) || newMessage.getTo_id().equals(user.getId())) &&
                     (newMessage.getFrom_id().equals(currentUser.getId()) || newMessage.getTo_id().equals(currentUser.getId()))) {
-                conversationMessages.add(newMessage);
-                conversationList.scrollTo(conversationMessages.size() - 1);
+                conversationMessages.add(newMessage); // Add new message to the list
+                filterMessages(searchField.getText()); // Re-filter messages based on the current search query
+                conversationList.scrollTo(conversationMessages.size() - 1); // Scroll to the latest message
             }
         }
     }
+
 }

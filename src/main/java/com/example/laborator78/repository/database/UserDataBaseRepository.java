@@ -11,10 +11,10 @@ import java.util.Optional;
 import java.util.Set;
 
 public class UserDataBaseRepository implements Repository<Long, User> {
-    private String url;
-    private String username;
-    private String password;
-    private Validator<User> validator;
+    private final String url;
+    private final String username;
+    private final String password;
+    private final Validator<User> validator;
 
     public UserDataBaseRepository(String url, String username, String password, Validator<User> validator) {
         this.url = url;
@@ -213,4 +213,14 @@ public class UserDataBaseRepository implements Repository<Long, User> {
 
         return Optional.empty(); // Return empty if no user is found
     }
+
+
+
+
+
+
+
+
+
+
 }

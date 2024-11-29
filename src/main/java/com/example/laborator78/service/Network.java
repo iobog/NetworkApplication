@@ -1,6 +1,8 @@
 package com.example.laborator78.service;
 
 import com.example.laborator78.domain.*;
+import com.example.laborator78.domain.pagining.Page;
+import com.example.laborator78.domain.pagining.Pageable;
 import com.example.laborator78.domain.validators.ValidationException;
 import com.example.laborator78.repository.database.MessageDataBaseRepository;
 import com.example.laborator78.repository.database.RequestDataBaseRepository;
@@ -46,7 +48,9 @@ public class Network implements Observable {
 
     @Override
     public void notifyObservers(Event t) {
-
+        for(Observer observer : observers) {
+            observer.update(t);
+        }
     }
 
     @Override
@@ -261,44 +265,10 @@ public class Network implements Observable {
     }
 
 
-    //send message,
-    // get my messages
-//
-//    public void sendMessage(User from, User to, String message, Optional<Long> reply_message_id) {
-//        Message message1 = new Message(from.getId(), to.getId(), message, java.time.LocalDateTime.now(), reply_message_id);
-//        repositoryMessage.save(message1);
-//    }
-//
-//
-//
-//    public List<MessageDTO> listMessages(User user1,User user2) {
-//        List<MessageDTO>messages = new ArrayList<>();
-//        repositoryMessage.findAll().forEach(message -> {
-//            if (message.getTo_id().equals(user1.getId()) && message.getFrom_id().equals(user2.getId())
-//            || (message.getTo_id().equals(user2.getId()) && message.getFrom_id().equals(user1.getId()))) {
-//
-//                Optional<String> strReplayMessage = Optional.empty();
-//                if (message.getReply_massage_id().isPresent()) {
-//                    Optional<Message> replyMessage = repositoryMessage.findOne(message.getReply_massage_id().get());
-//                    if (replyMessage.isPresent()) {
-//                        strReplayMessage = Optional.of(replyMessage.get().getMessage());
-//                    }
-//                }
-//
-//                MessageDTO messageDTO = new MessageDTO(message.getId(), message.getMessage(), message.getCreated_at(), strReplayMessage, message.getFrom_id(), message.getTo_id());
-//                messages.add(messageDTO);
-//
-//            }
-//        });
-//        messages.sort((m1,m2)->m1.getCreated_at().compareTo(m2.getCreated_at()));
-//        return messages;
-//    }
-
     public void sendMessage(User from, User to, String message, Optional<Long> reply_message_id) {
         Message message1 = new Message(from.getId(), to.getId(), message, java.time.LocalDateTime.now(), reply_message_id);
         repositoryMessage.save(message1);
 
-        // Notify observers about the new message
         notifyObservers("message_sent", new MessageDTO(
                 message1.getId(),
                 message1.getMessage(),
@@ -327,14 +297,37 @@ public class Network implements Observable {
                         message.getCreated_at(),
                         strReplyMessage.get(),
                         message.getFrom_id(),
-                        message.getTo_id()
-                );
+                        message.getTo_id());
                 messages.add(messageDTO);
             }
         });
         messages.sort((m1, m2) -> m1.getCreated_at().compareTo(m2.getCreated_at()));
         return messages;
     }
+
+    private  Page<Friendship> findAllOnPage(Long id, Pageable pageable){
+        return repositoryFriendship.findAllOnPage(id,pageable);
+    }
+
+    public Page<User> getFriendshipPaged(Long id, Pageable pageable){
+        try {
+            Page<Friendship> friends = repositoryFriendship.findAllOnPage(id, pageable);
+            List<User> users = friends.getContent().stream()
+                    .map(friendship -> {
+                        if (!friendship.getIdUser1().equals(id)) {
+                            return repositoryUser.findOne(friendship.getIdUser1()).orElse(null);
+                        } else {
+                            return repositoryUser.findOne(friendship.getIdUser2()).orElse(null);
+                        }
+                    })
+                    .toList();
+            return new Page<>(users,friends.getTotalNumberOfElements());
+        }catch (Exception e){
+            System.out.println("Eroare la Page<User>");
+        }
+        return null;
+    }
+
 
 
 }

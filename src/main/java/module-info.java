@@ -3,6 +3,7 @@ module com.example.laborator78 {
     requires javafx.fxml;
     requires java.sql;
     requires java.xml.crypto;
+    requires java.desktop;
 
 
     opens com.example.laborator78 to javafx.fxml;

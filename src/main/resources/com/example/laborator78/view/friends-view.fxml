@@ -3,19 +3,39 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="400.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.laborator78.controller.FriendsController">
+<?import javafx.geometry.Insets?>
+<AnchorPane stylesheets="@../css/whatsapp.css" prefHeight="400.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.laborator78.controller.FriendsController">
 
     <VBox spacing="10.0" style="-fx-padding: 10;">
-        <ListView fx:id="contactList" VBox.vgrow="ALWAYS"/>
-
-        <Separator>
-
-        </Separator>
-
-        <HBox spacing="10.0">
+        <HBox spacing="10.0" alignment="CENTER">
             <Button onAction="#onBackButtonClick" style="-fx-font-size: 14px;" text="Back" />
             <Button onAction="#onConversationButtonClick" style="-fx-font-size: 14px;" text="Message" />
         </HBox>
+
+        <Separator>
+            <VBox.margin>
+                <Insets top="10.0"/>
+            </VBox.margin>
+        </Separator>
+
+        <ListView fx:id="contactList" VBox.vgrow="ALWAYS"/>
+
+        <Separator>
+            <VBox.margin>
+                <Insets top="10.0"/>
+            </VBox.margin>
+        </Separator>
+
+        <VBox spacing="10.0">
+            <HBox spacing="10.0" alignment="CENTER" VBox.vgrow="ALWAYS">
+                <Button fx:id="buttonPrevious" text="◄" onAction="#handlePreviousPage" />
+                <Label fx:id="labelPage" text="Page: 1" style="-fx-font-size: 14;" />
+                <Button fx:id="buttonNext" text="►" onAction="#handleNextPage" />
+            </HBox>
+
+
+        </VBox>
+
 
     </VBox>
 
