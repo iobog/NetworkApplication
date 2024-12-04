@@ -1,6 +1,8 @@
 package com.example.laborator78.controller;
 
 
+import com.example.laborator78.HelloApplication;
+import com.example.laborator78.domain.User;
 import com.example.laborator78.service.Network;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -22,51 +24,39 @@ public class LoginController {
     @FXML
     private PasswordField passwordField;
 
-    private Network service;
-    Stage dialogStage;
+    private HelloApplication app;
+    private User currentUser;
 
-    public void setService(Network service,  Stage stage) {
-        this.service = service;
-        this.dialogStage=stage;
+
+    public void setApp(HelloApplication app) {
+        this.app = app;
     }
 
     public void onSubmitButtonClick(ActionEvent actionEvent) {
-        // Get data from fields
-        String email = emailField.getText();
+        // Example: Authenticate user based on input fields
+        String username = emailField.getText();
         String password = passwordField.getText();
 
-        // Check if the password and confirm password match else show an pop up error
-        if (service.findUserByEmailAndPassword(email, password)!=null) {
+        var userOptional = app.service.findUserByEmailAndPassword(username, password);
+
+        if (userOptional!=null) {
+            currentUser = userOptional;
             try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/laborator78/view/user-view.fxml"));
-                Parent root = loader.load();
-                Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
-                stage.setScene(new Scene(root));
-                stage.show();
-            } catch (IOException e) {
+                Stage window = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
+                app.openUserView(window,currentUser);
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         } else {
-            try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/laborator78/view/hello-view.fxml"));
-                Parent root = loader.load();
-                Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
-                stage.setScene(new Scene(root));
-                stage.show();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            System.out.println("Invalid credentials");
+            app.showError("Invalid credentials. Please try again.");
         }
     }
 
     public void onCancelButtonClick(ActionEvent actionEvent) {
-
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/laborator78/view/hello-view.fxml"));
-            Parent root = loader.load();
-            Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.show();
+            Stage window = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
+            app.showHelloView(window);
         } catch (IOException e) {
             e.printStackTrace();
         }

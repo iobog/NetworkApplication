@@ -1,5 +1,6 @@
 package com.example.laborator78.controller;
 
+import com.example.laborator78.HelloApplication;
 import com.example.laborator78.domain.User;
 import com.example.laborator78.service.Network;
 import javafx.event.ActionEvent;
@@ -29,21 +30,21 @@ public class SignupController {
     private TextField confirmPasswordField;
 
 
-    private Network service;
-    Stage dialogStage;
+    private HelloApplication app;
+    private User currentUser;
 
-    public void setService(Network service,  Stage stage) {
-        this.service = service;
-        this.dialogStage=stage;
+    public void setCurrentUser(User currentUser) {
+        this.currentUser = currentUser;
+    }
+
+    public void setApp(HelloApplication app) {
+        this.app = app;
     }
 
     public void onCancelButtonClick(ActionEvent actionEvent) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/laborator78/view/hello-view.fxml"));
-            Parent root = loader.load();
-            Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.show();
+            Stage window = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
+            app.showHelloView(window);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -57,24 +58,20 @@ public class SignupController {
         String password = passwordField.getText();
         String confirmPassword = confirmPasswordField.getText();// Get data from fields
 
-        // Check if the password and confirm password match else show an pop up error
-        if (!password.equals(confirmPassword)) {
-            // Show an error if the passwords don't match
-            showAlert("Password mismatch", "The passwords you entered do not match.");
-            return;
-        }
-
         User user = new User(firstName, lastName, email, password);
 
-        if(service.findUserByEmail(email)){
+        if(app.service.findUserByEmail(email)){
             showAlert("Error", "User already exists");
-            return;
         }
-
+        else if(!password.equals(confirmPassword)){
+            showAlert("Error", "Passwords do not match");
+        }
         try{
-            service.addUser(user);
+            app.service.addUser(user);
             showAlert("Success", "User has been successfully created.");
-            dialogStage.close();
+            Stage window = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
+            app.showUserView(window,currentUser);
+
         }
         catch (Exception e){
             showAlert("Error", "There was an error creating the user.");

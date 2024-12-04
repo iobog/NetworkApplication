@@ -2,41 +2,34 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.shape.*?>
 
-<AnchorPane prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.laborator78.controller.UserController">
-    <!-- Top Layout -->
-    <VBox alignment="TOP_LEFT" spacing="10.0" style="-fx-padding: 10;">
-        <!-- Circle and Buttons Row -->
-        <HBox alignment="CENTER_LEFT" spacing="20.0">
-            <!-- Big Circle -->
-            <Circle fx:id="profileCircle" fill="#1d8015" radius="40.0" />
-            <!-- Buttons -->
-            <HBox alignment="CENTER_LEFT" prefWidth="730.0" spacing="10.0">
-                <Button onAction="#onContactRequestButtonClick" style="-fx-font-size: 14px;" text="Contact Request" />
-                <Button onAction="#onAddContactButtonClick" style="-fx-font-size: 14px;" text="Add Contact" />
-                <Button onAction="#onDeleteContactButtonClick" style="-fx-font-size: 14px;" text="Delete Contact" />
-                <Button onAction="#onLogoutButtonClick" style="-fx-font-size: 14px;" text="Log Out" />
-                <Button onAction="#onDeleteAccountButtonClick" style="-fx-font-size: 14px;" text="Delete Account" />
+<AnchorPane prefHeight="600.0" prefWidth="600.0" stylesheets="@../css/user-view.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.laborator78.controller.UserController">
+
+    <VBox spacing="10" style="-fx-padding: 30">
+
+        <HBox spacing="10.0">
+            <HBox spacing="5.0">
+                <Label fx:id="firstNameField" style="-fx-font-size: 24px;" text="Name" />
+                <Label fx:id="lastNameField" style="-fx-font-size: 24px;" text="Surname" />
             </HBox>
+            <VBox alignment="CENTER" spacing="2.0">
+                <Button onAction="#onLogoutButtonClick" prefWidth="150" style="-fx-font-size: 12px;" text="Log Out" />
+                <Button onAction="#onDeleteAccountButtonClick" prefWidth="150" style="-fx-font-size: 12px;" text="Delete Account" />
+            </VBox>
         </HBox>
+        <Separator />
 
-        <!-- Contact List -->
-        <ListView fx:id="contactList" prefHeight="600.0" prefWidth="800.0" />
+        <HBox>
+            <VBox alignment="CENTER_LEFT" prefWidth="600.0" spacing="10.0">
+                <Button onAction="#onShowFrindsButtonClick" prefWidth="150" style="-fx-font-size: 14px;" text="Friends" />
+                <Button onAction="#onShowRecommendedFriendsButtonClick" prefWidth="150" style="-fx-font-size: 14px;" text="Recommended" />
+                <Button onAction="#onShowFriendsRequestButtonClick" prefWidth="150" style="-fx-font-size: 14px;" text="Requests" />
+                <Button onAction="#onShowSentFriendsRequestButtonClick" prefWidth="150" style="-fx-font-size: 14px;" text="Sent Requests" />
+            </VBox>
 
-        <!-- Bottom Layout -->
-        <HBox alignment="CENTER" spacing="10.0">
-            <TextField fx:id="contactNameField" promptText="Contact Name" />
-            <TextField fx:id="contactEmailField" promptText="Contact Email" />
-            <Button onAction="#onAddContactButtonClick" style="-fx-font-size: 14px;" text="Add Contact" />
+            <!-- main -->
+            <VBox fx:id="mainBox">
+            </VBox>
         </HBox>
-      <Accordion>
-        <panes>
-          <TitledPane animated="false" text="untitled 1" />
-          <TitledPane animated="false" text="untitled 2" />
-        </panes>
-      </Accordion>
-
-
     </VBox>
 </AnchorPane>

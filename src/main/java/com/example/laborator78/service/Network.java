@@ -1,9 +1,9 @@
 package com.example.laborator78.service;
 
-import com.example.laborator78.controller.UserRequestDTO;
-import com.example.laborator78.domain.Friendship;
-import com.example.laborator78.domain.User;
+import com.example.laborator78.domain.*;
 import com.example.laborator78.domain.validators.ValidationException;
+import com.example.laborator78.repository.database.MessageDataBaseRepository;
+import com.example.laborator78.repository.database.RequestDataBaseRepository;
 import com.example.laborator78.utils.events.ChangeEventType;
 import com.example.laborator78.utils.events.Event;
 import com.example.laborator78.utils.events.UserEntityChangeEvent;
@@ -16,15 +16,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Vector;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.StreamSupport;
 
 public class Network implements Observable {
     private final UserDataBaseRepository repositoryUser;
     private final FriendshipDataBaseRepository repositoryFriendship;
+    private final RequestDataBaseRepository repositoryFriendshipRequest;
+    private final MessageDataBaseRepository repositoryMessage;
+
     private final List<Observer> observers = new ArrayList<>();
 
-    public Network(UserDataBaseRepository userDataBaseRepository, FriendshipDataBaseRepository friendshipDataBaseRepository) {
+    public Network(UserDataBaseRepository userDataBaseRepository, FriendshipDataBaseRepository friendshipDataBaseRepository, RequestDataBaseRepository requestDataBaseRepository, MessageDataBaseRepository repositoryMessage) {
         this.repositoryUser = userDataBaseRepository;
         this.repositoryFriendship = friendshipDataBaseRepository;
+        this.repositoryFriendshipRequest=requestDataBaseRepository;
+        this.repositoryMessage = repositoryMessage;
     }
 
     @Override
@@ -39,7 +46,9 @@ public class Network implements Observable {
 
     @Override
     public void notifyObservers(Event t) {
-
+        for(Observer observer : observers) {
+            observer.update(t);
+        }
     }
 
     @Override
@@ -170,15 +179,162 @@ public class Network implements Observable {
         return user.isPresent();
     }
 
-    /// this function is not implemented good
-    public List<UserRequestDTO> getUserRequests() {
-        ///
-        List<UserRequestDTO> userRequests = new ArrayList<>();
-        for (User user : getUsers()) {
-            if (user.getFriends().size() == 0) {
-                userRequests.add(new UserRequestDTO(user.getFirstName(), user.getLastName(), user.getId()));
+
+    public List<User> getRecommendedFriends(User currentUser) {
+        List<User>nonFriends = new ArrayList<>();
+
+        var friends = this.getListFriends(currentUser).stream()
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .map(User::getId)
+                .toList();
+
+        var sentRequests = getSentFriendshipRequests(currentUser).stream()
+                .map(UserRequestDTO::getUserId)
+                .toList();
+
+        getUsers().forEach(user -> {
+            if (!user.equals(currentUser)) {
+                boolean containsValue = friends.contains(user.getId());
+
+                boolean requested = sentRequests.contains(user.getId());
+
+                if (!containsValue && !requested) {
+                    nonFriends.add(user);
+                }
             }
-        }
-        return userRequests;
+        });
+        return nonFriends;
     }
+
+    public List<UserRequestDTO> getFriendshipRequests(User currentUser) {
+        var requests = repositoryFriendshipRequest.findAll();
+        return StreamSupport.stream(requests.spliterator(), false)
+            .filter(request -> request.getUser_to().equals(currentUser.getId()) && request.getStatus().equals("pending"))
+            .map(request -> {
+                var user = findUser(request.getUser_from()).orElse(null);
+                UserRequestDTO userRequestDTO= new UserRequestDTO(user.getFirstName(), user.getLastName(), request.getUser_from(), request.getCreated_at(),request.getStatus());
+                userRequestDTO.setId(request.getId());
+                return userRequestDTO;
+            })
+            .toList();
+
+    }
+
+    public List<UserRequestDTO> getSentFriendshipRequests(User currentUser) {
+        var requests = repositoryFriendshipRequest.findAll();
+        return StreamSupport.stream(requests.spliterator(), false)
+                .filter(request -> request.getUser_from().equals(currentUser.getId()) && request.getStatus().equals("pending"))
+                .map(request -> {
+                    var user = findUser(request.getUser_to()).orElse(null);
+                    UserRequestDTO userRequestDTO= new UserRequestDTO(user.getFirstName(), user.getLastName(), request.getUser_to(), request.getCreated_at(),request.getStatus());
+                    userRequestDTO.setId(request.getId());
+                    return userRequestDTO;
+                })
+                .toList();
+
+    }
+
+
+    public void acceptFriendshipRequest(User currentUser, UserRequestDTO userRequestDTO) {
+        Friendship friendship = new Friendship(currentUser.getId(), userRequestDTO.getUserId());
+        addFriendship(friendship);
+        FriendshipRequest friendshipRequest = new FriendshipRequest(userRequestDTO.getUserId(),currentUser.getId(),"accepted", userRequestDTO.getCreated_at());
+        friendshipRequest.setId(userRequestDTO.getId());
+        repositoryFriendshipRequest.update(friendshipRequest);
+
+    }
+
+    public void rejectFriendshipRequest(User currentUser, UserRequestDTO userRequestDTO) {
+        Friendship friendship = new Friendship(currentUser.getId(), userRequestDTO.getUserId());
+       // addFriendship(friendship);
+        FriendshipRequest friendshipRequest = new FriendshipRequest(userRequestDTO.getUserId(),currentUser.getId(),"rejected", userRequestDTO.getCreated_at());
+        friendshipRequest.setId(userRequestDTO.getId());
+        repositoryFriendshipRequest.update(friendshipRequest);
+    }
+
+    public void sendFriendshipRequest(User user, User user1) {
+        FriendshipRequest friendshipRequest = new FriendshipRequest(user.getId(), user1.getId(), "pending", java.time.LocalDateTime.now());
+        repositoryFriendshipRequest.save(friendshipRequest);
+    }
+
+    public void deleteFriendshipRequest(UserRequestDTO userRequestDTO) {
+        repositoryFriendshipRequest.delete(userRequestDTO.getId());
+    }
+
+
+    //send message,
+    // get my messages
+//
+//    public void sendMessage(User from, User to, String message, Optional<Long> reply_message_id) {
+//        Message message1 = new Message(from.getId(), to.getId(), message, java.time.LocalDateTime.now(), reply_message_id);
+//        repositoryMessage.save(message1);
+//    }
+//
+//
+//
+//    public List<MessageDTO> listMessages(User user1,User user2) {
+//        List<MessageDTO>messages = new ArrayList<>();
+//        repositoryMessage.findAll().forEach(message -> {
+//            if (message.getTo_id().equals(user1.getId()) && message.getFrom_id().equals(user2.getId())
+//            || (message.getTo_id().equals(user2.getId()) && message.getFrom_id().equals(user1.getId()))) {
+//
+//                Optional<String> strReplayMessage = Optional.empty();
+//                if (message.getReply_massage_id().isPresent()) {
+//                    Optional<Message> replyMessage = repositoryMessage.findOne(message.getReply_massage_id().get());
+//                    if (replyMessage.isPresent()) {
+//                        strReplayMessage = Optional.of(replyMessage.get().getMessage());
+//                    }
+//                }
+//
+//                MessageDTO messageDTO = new MessageDTO(message.getId(), message.getMessage(), message.getCreated_at(), strReplayMessage, message.getFrom_id(), message.getTo_id());
+//                messages.add(messageDTO);
+//
+//            }
+//        });
+//        messages.sort((m1,m2)->m1.getCreated_at().compareTo(m2.getCreated_at()));
+//        return messages;
+//    }
+
+    public void sendMessage(User from, User to, String message, Optional<Long> reply_message_id) {
+        Message message1 = new Message(from.getId(), to.getId(), message, java.time.LocalDateTime.now(), reply_message_id);
+        repositoryMessage.save(message1);
+
+        notifyObservers("message_sent", new MessageDTO(
+                message1.getId(),
+                message1.getMessage(),
+                message1.getCreated_at(),
+                reply_message_id.map(id -> repositoryMessage.findOne(id).orElse(new Message(0L, 0L, "", null, Optional.empty())).getMessage()),
+                from.getId(),
+                to.getId()
+        ));
+    }
+
+    public List<MessageDTO> listMessages(User user1, User user2) {
+        List<MessageDTO> messages = new ArrayList<>();
+        repositoryMessage.findAll().forEach(message -> {
+            if (message.getTo_id().equals(user1.getId()) && message.getFrom_id().equals(user2.getId())
+                    || (message.getTo_id().equals(user2.getId()) && message.getFrom_id().equals(user1.getId()))) {
+
+                AtomicReference<Optional<String>> strReplyMessage = new AtomicReference<>(Optional.empty());
+                if (message.getReply_massage_id().isPresent()) {
+                    Optional<Message> replyMessage = repositoryMessage.findOne(message.getReply_massage_id().get());
+                    replyMessage.ifPresent(value -> strReplyMessage.set(Optional.of(value.getMessage())));
+                }
+
+                MessageDTO messageDTO = new MessageDTO(
+                        message.getId(),
+                        message.getMessage(),
+                        message.getCreated_at(),
+                        strReplyMessage.get(),
+                        message.getFrom_id(),
+                        message.getTo_id());
+                messages.add(messageDTO);
+            }
+        });
+        messages.sort((m1, m2) -> m1.getCreated_at().compareTo(m2.getCreated_at()));
+        return messages;
+    }
+
+
 }

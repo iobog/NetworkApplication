@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane stylesheets="@../css/whatsapp.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.laborator78.controller.ConversationController">
+
+    <VBox spacing="10.0" style="-fx-padding: 10" styleClass="root" AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
+
+        <!-- Header with conversation name, search bar, and back button -->
+        <HBox spacing="10.0" styleClass="header">
+            <Label fx:id="conversationName" style="-fx-font-size: 16px;" HBox.hgrow="NEVER" />
+
+            <!-- Search bar -->
+            <TextField fx:id="searchField" promptText="Search..." styleClass="search-field" HBox.hgrow="ALWAYS" />
+
+            <Button fx:id="backButton" alignment="CENTER_RIGHT" onAction="#onBackButtonClick" styleClass="back-button" text="Back" HBox.hgrow="NEVER" />
+        </HBox>
+
+        <!-- Conversation List -->
+        <ListView fx:id="conversationList" styleClass="conversation-list" VBox.vgrow="ALWAYS" />
+
+        <!-- Reply Box -->
+        <HBox fx:id="replyBox" spacing="10.0" styleClass="reply-box" visible="false">
+            <Label fx:id="selectedReplyMessageLabel" styleClass="reply-label" />
+            <Button fx:id="clearReplyButton" onAction="#onClearReplyButtonClicked" styleClass="clear-button" text="Clear" />
+        </HBox>
+
+        <!-- Input Box -->
+        <HBox spacing="10.0" styleClass="input-box">
+            <TextField fx:id="messageField" promptText="Type a message..." styleClass="message-field" HBox.hgrow="ALWAYS" />
+            <Button fx:id="sendButton" onAction="#onSendButtonClick" styleClass="send-button" text="Send" HBox.hgrow="NEVER" />
+        </HBox>
+
+    </VBox>
+
+</AnchorPane>
+
+
